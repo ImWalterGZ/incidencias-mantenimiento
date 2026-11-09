@@ -1,0 +1,66 @@
+@startuml componentes
+!include _estilo.iuml
+title Componentes · Cliente-servidor con backend en capas
+package "Frontend · Angular (SPA)" {
+  [LoginComponent] as FLogin
+  [MisIncidenciasComponent] as FUsr
+  [BandejaCoordinadorComponent] as FCoord
+  [BandejaTecnicoComponent] as FTec
+  [DetalleIncidenciaComponent] as FDet
+  [IncidenciaApiService] as FApi
+  [AuthService + authInterceptor] as FAuth
+  FLogin --> FAuth
+  FUsr --> FApi
+  FCoord --> FApi
+  FTec --> FApi
+  FDet --> FApi
+  FApi ..> FAuth : agrega Bearer
+}
+package "Backend · Spring Boot" {
+  package "Seguridad" {
+    [JwtAuthenticationFilter] as Filtro
+    [SecurityConfig] as SecCfg
+    [JwtUtil] as Jwt
+    Filtro --> Jwt
+  }
+  package "controller" {
+    [AuthController] as CAuth
+    [IncidenciaController] as CInc
+    [UbicacionController] as CUbi
+    [UsuarioController] as CUsr
+  }
+  package "service" {
+    [AuthService] as SAuth
+    [IncidenciaService] as SInc
+    [UbicacionService] as SUbi
+    [UsuarioService] as SUsr
+  }
+  package "repository" {
+    [IncidenciaRepository] as RInc
+    [HistorialEstadoRepository] as RHis
+    [UbicacionRepository] as RUbi
+    [UsuarioRepository] as RUsr
+  }
+  [ExceptionHandler] as Exc
+  CAuth --> SAuth
+  CInc --> SInc
+  CUbi --> SUbi
+  CUsr --> SUsr
+  SAuth --> Jwt
+  SAuth --> RUsr
+  SInc --> RInc
+  SInc --> RHis
+  SInc --> RUbi
+  SInc --> RUsr
+  SUbi --> RUbi
+  SUsr --> RUsr
+}
+database "PostgreSQL\n(Flyway)" as BD
+FAuth --> CAuth : POST /api/v1/auth/login
+FApi --> Filtro : HTTP + JSON\n/api/v1/**
+Filtro --> CInc
+RInc --> BD
+RHis --> BD
+RUbi --> BD
+RUsr --> BD
+@enduml

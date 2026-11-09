@@ -1,0 +1,74 @@
+@startuml clases
+!include _estilo.iuml
+hide empty methods
+title Modelo de dominio · Clases persistentes y enums
+enum Rol {
+  USUARIO
+  TECNICO
+  COORDINADOR
+}
+enum Categoria {
+  ELECTRICA
+  PLOMERIA
+  MOBILIARIO
+  EQUIPO_COMPUTO
+  CLIMATIZACION
+  OTRA
+}
+enum Prioridad {
+  BAJA
+  MEDIA
+  ALTA
+}
+enum EstadoIncidencia {
+  REPORTADA
+  ASIGNADA
+  EN_PROCESO
+  RESUELTA
+  --
+  + siguiente() : EstadoIncidencia
+}
+enum TipoUbicacion {
+  AULA
+  LABORATORIO
+  OFICINA
+}
+class UsuarioModel <<Entity>> {
+  - id : Long
+  - nombre : String
+  - username : String
+  - passwordHash : String
+  - rol : Rol
+}
+class UbicacionModel <<Entity>> {
+  - id : Long
+  - edificio : String
+  - nombre : String
+  - tipo : TipoUbicacion
+}
+class IncidenciaModel <<Entity>> {
+  - id : Long
+  - descripcion : String
+  - categoria : Categoria
+  - prioridad : Prioridad
+  - estado : EstadoIncidencia
+  - fechaReporte : OffsetDateTime
+}
+class HistorialEstadoModel <<Entity>> {
+  - id : Long
+  - estadoAnterior : EstadoIncidencia [0..1]
+  - estadoNuevo : EstadoIncidencia
+  - comentario : String [0..1]
+  - fecha : OffsetDateTime
+}
+IncidenciaModel "*" --> "1" UbicacionModel : ubicacion
+IncidenciaModel "*" --> "1" UsuarioModel : reportante
+IncidenciaModel "*" --> "0..1" UsuarioModel : tecnico
+HistorialEstadoModel "*" --> "1" IncidenciaModel : incidencia
+HistorialEstadoModel "*" --> "1" UsuarioModel : realizadoPor
+UsuarioModel ..> Rol
+UbicacionModel ..> TipoUbicacion
+IncidenciaModel ..> Categoria
+IncidenciaModel ..> Prioridad
+IncidenciaModel ..> EstadoIncidencia
+@enduml

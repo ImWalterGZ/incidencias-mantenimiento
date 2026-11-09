@@ -1,0 +1,35 @@
+@startuml secuencia-registrar
+!include _estilo.iuml
+autonumber
+title Secuencia · Registrar incidencia (RF3, RN1, RN2, RN6)
+actor Usuario
+participant "MisIncidenciasComponent\n(Angular)" as UI
+participant "JwtAuthenticationFilter" as F
+participant "IncidenciaController" as C
+participant "IncidenciaService" as S
+participant "UbicacionRepository" as RU
+participant "IncidenciaRepository" as RI
+participant "HistorialEstadoRepository" as RH
+database PostgreSQL as BD
+Usuario -> UI : llena ubicación, categoría,\nprioridad y descripción
+UI -> F : POST /api/v1/incidencias\nAuthorization: Bearer <jwt>
+F -> F : valida token y carga rol USUARIO
+F -> C : petición autenticada
+C -> C : valida IncidenciaRequestDto (RN1)
+alt datos inválidos
+  C --> UI : 400 Bad Request
+end
+C -> S : registrar(dto, usuario)
+S -> RU : findById(ubicacionId)
+alt ubicación inexistente
+  S --> UI : 422 Unprocessable Entity
+end
+S -> S : estado = REPORTADA (RN2)\nfechaReporte = ahora
+S -> RI : save(incidencia)
+RI -> BD : INSERT incidencia
+S -> RH : save(historial: null → REPORTADA)
+RH -> BD : INSERT historial_estado_incidencia
+S --> C : IncidenciaResponseDto
+C --> UI : 201 Created
+UI --> Usuario : muestra la incidencia en «mis incidencias»
+@enduml

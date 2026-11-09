@@ -1,0 +1,43 @@
+@startuml secuencia-estado
+!include _estilo.iuml
+autonumber
+title Secuencia · Asignar técnico y actualizar estado (RF7, RF8, RN3–RN6)
+actor Coordinador
+actor Técnico
+participant "Angular" as UI
+participant "SecurityConfig\n+ filtro JWT" as SEC
+participant "IncidenciaController" as C
+participant "IncidenciaService" as S
+participant "Repositorios" as R
+database PostgreSQL as BD
+== Asignar técnico ==
+Coordinador -> UI : elige técnico
+UI -> SEC : PATCH /incidencias/{id}/asignacion
+SEC -> SEC : rol COORDINADOR, si no 403
+SEC -> C : petición autorizada
+C -> S : asignar(id, tecnicoId, coordinador)
+S -> R : incidencia y técnico
+alt estado ≠ REPORTADA
+  S --> UI : 409 Conflict
+else el usuario no tiene rol TECNICO
+  S --> UI : 422 Unprocessable Entity
+end
+S -> R : estado = ASIGNADA, tecnico = t\n+ historial REPORTADA → ASIGNADA
+R -> BD : UPDATE + INSERT (una transacción)
+C --> UI : 200 OK
+== Actualizar estado ==
+Técnico -> UI : «Iniciar» / «Resolver» + comentario
+UI -> SEC : PATCH /incidencias/{id}/estado
+SEC -> SEC : rol TECNICO, si no 403
+SEC -> C : petición autorizada
+C -> S : cambiarEstado(id, nuevo, comentario, tecnico)
+alt no es el técnico asignado (RN5)
+  S --> UI : 403 Forbidden
+else nuevo ≠ estado.siguiente() (RN4)
+  S --> UI : 409 Conflict
+end
+S -> R : estado = nuevo + historial
+R -> BD : UPDATE + INSERT (una transacción)
+C --> UI : 200 OK
+UI --> Técnico : bandeja actualizada
+@enduml

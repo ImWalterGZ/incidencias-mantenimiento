@@ -1,0 +1,19 @@
+@startuml despliegue
+!include _estilo.iuml
+title Despliegue · Prototipo local
+node "Navegador" {
+  artifact "SPA Angular\n(ng serve :4200)" as SPA
+}
+node "Equipo de desarrollo" {
+  node "JVM 21" {
+    artifact "incidencias-backend.jar\nSpring Boot :8081" as API
+  }
+  node "Contenedor podman" {
+    database "PostgreSQL 16\n:5433" as PG
+  }
+  artifact "Postman / newman" as PM
+}
+SPA --> API : HTTP REST + JWT
+PM --> API : HTTP REST + JWT
+API --> PG : JDBC
+@enduml

@@ -1,0 +1,49 @@
+@startuml entidad-relacion
+!include _estilo.iuml
+hide circle
+hide empty methods
+skinparam linetype ortho
+title Modelo entidad-relación · PostgreSQL (V1__esquema_inicial.sql)
+entity usuario {
+  * id : bigserial <<PK>>
+  --
+  * nombre : varchar(120)
+  * username : varchar(60) <<UQ>>
+  * password_hash : varchar(100)
+  * rol : varchar(20) <<CHECK>>
+}
+entity ubicacion {
+  * id : bigserial <<PK>>
+  --
+  * edificio : varchar(60)
+  * nombre : varchar(120)
+  * tipo : varchar(20) <<CHECK>>
+}
+entity incidencia {
+  * id : bigserial <<PK>>
+  --
+  * ubicacion_id : bigint <<FK>>
+  * reportante_id : bigint <<FK>>
+  tecnico_id : bigint <<FK>>
+  * categoria : varchar(30) <<CHECK>>
+  * descripcion : varchar(1000)
+  * prioridad : varchar(10) <<CHECK>>
+  * estado : varchar(20) <<CHECK>>
+  * fecha_reporte : timestamptz
+}
+entity historial_estado_incidencia {
+  * id : bigserial <<PK>>
+  --
+  * incidencia_id : bigint <<FK>>
+  * usuario_id : bigint <<FK>>
+  estado_anterior : varchar(20)
+  * estado_nuevo : varchar(20)
+  comentario : varchar(500)
+  * fecha : timestamptz
+}
+ubicacion ||--o{ incidencia
+usuario ||--o{ incidencia : reporta
+usuario |o--o{ incidencia : atiende
+incidencia ||--|{ historial_estado_incidencia
+usuario ||--o{ historial_estado_incidencia : realiza
+@enduml

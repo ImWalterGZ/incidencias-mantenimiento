@@ -1,0 +1,24 @@
+@startuml estados
+!include _estilo.iuml
+title Máquina de estados · Incidencia (RN2, RN4, RN5)
+hide empty description
+[*] --> REPORTADA : Usuario registra\n(POST /incidencias)
+REPORTADA --> ASIGNADA : Coordinador asigna técnico\n(PATCH /incidencias/{id}/asignacion)
+ASIGNADA --> EN_PROCESO : Técnico asignado inicia\n(PATCH /incidencias/{id}/estado)
+EN_PROCESO --> RESUELTA : Técnico asignado resuelve\n(PATCH /incidencias/{id}/estado)
+RESUELTA --> [*]
+note right of REPORTADA
+  Estado inicial obligatorio:
+  el cliente no lo envía.
+end note
+note right of EN_PROCESO
+  Cualquier otra transición
+  (saltar, retroceder, repetir)
+  responde 409 Conflict.
+  Otro técnico responde 403.
+end note
+note right of RESUELTA
+  Cada transición escribe una fila
+  en historial_estado_incidencia.
+end note
+@enduml
