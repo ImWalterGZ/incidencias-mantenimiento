@@ -1,0 +1,26 @@
+server:
+  port: ${PUERTO:8081}
+
+spring:
+  application:
+    name: incidencias-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/incidencias}
+    username: ${SPRING_DATASOURCE_USERNAME:incidencias}
+    password: ${SPRING_DATASOURCE_PASSWORD:incidencias}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  flyway:
+    locations: classpath:db/migration
+
+jwt:
+  # Solo para el prototipo; en producción vendría de una variable de entorno o un gestor de secretos.
+  secret: ${JWT_SECRET:5f3c9a7e1b2d4f6081a3c5e7f9b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c3e5b7}
+  expiration: 28800000 # 8 horas en milisegundos
+
+api:
+  base-path: /api/v1
+  cors-origin: ${CORS_ORIGIN:http://localhost:4200}
