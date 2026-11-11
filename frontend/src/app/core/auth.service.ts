@@ -21,6 +21,15 @@ export class AuthService {
     return u ? RUTA_INICIO[u.rol] : '/login';
   });
 
+  constructor() {
+    // Si otra pestaña inicia o cierra sesión, esta recarga para no mostrar a un usuario y enviar el token de otro.
+    window.addEventListener('storage', (e) => {
+      if (e.key === CLAVE_TOKEN || e.key === null) {
+        window.location.reload();
+      }
+    });
+  }
+
   get token(): string | null {
     return localStorage.getItem(CLAVE_TOKEN);
   }

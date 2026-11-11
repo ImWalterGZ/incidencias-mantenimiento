@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { IncidenciaApiService } from '../../core/incidencia-api.service';
 import {
@@ -16,6 +16,13 @@ import {
 } from '../../core/models';
 
 const MAX_DESCRIPCION = 1000;
+const MIN_DESCRIPCION = 10;
+
+/** Igual que el backend: la longitud mínima se mide sobre el texto recortado. */
+function minimoSinEspacios(c: AbstractControl<string | null>): ValidationErrors | null {
+  const largo = (c.value ?? '').trim().length;
+  return largo > 0 && largo < MIN_DESCRIPCION ? { minlength: { requiredLength: MIN_DESCRIPCION, actualLength: largo } } : null;
+}
 
 @Component({
   selector: 'app-mis-incidencias',
@@ -142,7 +149,7 @@ export class MisIncidenciasComponent {
     ubicacionId: [null as number | null, Validators.required],
     categoria: [null as (typeof CATEGORIAS)[number] | null, Validators.required],
     prioridad: ['MEDIA' as (typeof PRIORIDADES)[number], Validators.required],
-    descripcion: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(MAX_DESCRIPCION)]],
+    descripcion: ['', [Validators.required, minimoSinEspacios, Validators.maxLength(MAX_DESCRIPCION)]],
   });
 
   protected readonly ubicaciones = signal<Ubicacion[]>([]);

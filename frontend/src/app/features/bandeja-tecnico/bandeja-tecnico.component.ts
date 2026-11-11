@@ -58,6 +58,7 @@ const SIGUIENTE: Partial<Record<Estado, { estado: Estado; boton: string }>> = {
                 <div class="filtro" style="flex: 1; min-width: 260px">
                   <input type="text" maxlength="500" placeholder="Comentario (opcional)"
                     [attr.aria-label]="'Comentario para la incidencia ' + i.id"
+                    [value]="comentarios()[i.id] ?? ''"
                     (input)="comentar(i.id, $any($event.target).value)" />
                   <button type="button" class="btn btn--chico" style="white-space: nowrap"
                     [disabled]="avanzando() === i.id" (click)="avanzar(i, sig.estado)">
