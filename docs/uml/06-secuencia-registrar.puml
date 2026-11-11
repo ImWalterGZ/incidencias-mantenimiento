@@ -27,7 +27,7 @@ end
 S -> S : estado = REPORTADA (RN2)\nfechaReporte = ahora
 S -> RI : save(incidencia)
 RI -> BD : INSERT incidencia
-S -> RH : save(historial: null → REPORTADA)
+S -> RH : save(historial: null -> REPORTADA)
 RH -> BD : INSERT historial_estado_incidencia
 S --> C : IncidenciaResponseDto
 C --> UI : 201 Created

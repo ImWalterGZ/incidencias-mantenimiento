@@ -27,12 +27,14 @@ await p.getByText('registrada').waitFor();
 await p.screenshot({ path: OUT + '02-usuario-reporta.png' });
 const id = (await p.getByText(/Incidencia #\d+ registrada/).innerText()).match(/#(\d+)/)[1];
 console.log('id', id);
+// Las filas y tarjetas se ubican por id, no por descripción: así el script se puede repetir sobre la misma base.
+const porId = new RegExp('#' + id + '\\b');
 const anaCtx = p;
 // elena
 p = await sesion('elena');
 await p.waitForURL('**/coordinacion');
-await p.locator('tr', { hasText: '#' + id }).waitFor();
-const fila = p.locator('tr', { hasText: desc });
+const fila = p.locator('tr', { hasText: porId });
+await fila.waitFor();
 await fila.locator('select').selectOption({ label: 'Carlos Méndez' });
 await p.screenshot({ path: OUT + '03-coordinador-asigna.png' });
 await fila.getByRole('button', { name: 'Asignar' }).click();
@@ -40,20 +42,26 @@ await p.getByText(/asignada a Carlos/).waitFor();
 // carlos
 p = await sesion('carlos');
 await p.waitForURL('**/tecnico');
-let card = p.locator('article', { hasText: desc });
+let card = p.locator('article', { hasText: porId });
 await card.getByRole('textbox').fill('Reviso el proyector y el cable de corriente');
 await card.getByRole('button', { name: 'Iniciar atención' }).click();
 await p.getByText(/ahora está «En proceso»/).waitFor();
-card = p.locator('article', { hasText: desc });
+card = p.locator('article', { hasText: porId });
 await card.getByRole('textbox').fill('Se reemplazó la lámpara del proyector; enciende y proyecta bien');
 await p.screenshot({ path: OUT + '04-tecnico-avanza.png' });
 await card.getByRole('button', { name: 'Marcar como resuelta' }).click();
 await p.getByText(/ahora está «Resuelta»/).waitFor();
 // ana detalle
 await anaCtx.goto('http://localhost:4200/mis-incidencias');
-await anaCtx.locator('article', { hasText: desc }).getByRole('link', { name: 'Ver seguimiento' }).click();
+await anaCtx.locator('article', { hasText: porId }).getByRole('link', { name: 'Ver seguimiento' }).click();
 await anaCtx.locator('.linea li').first().waitFor();
-console.log('entradas historial', await anaCtx.locator('.linea li').count());
+await anaCtx.locator('.linea li').nth(3).waitFor();
+const entradas = await anaCtx.locator('.linea li').allInnerTexts();
+console.log('entradas historial', entradas.length);
+const esperado = [['Ana López', 'Reportada'], ['Elena Salazar', 'Asignada'], ['Carlos Méndez', 'En proceso'], ['Carlos Méndez', 'Resuelta']];
+if (entradas.length !== 4 || !esperado.every(([autor, estado], k) => entradas[k].includes(autor) && entradas[k].includes(estado))) {
+  throw new Error('El seguimiento no tiene las 4 entradas esperadas: ' + JSON.stringify(entradas));
+}
 await anaCtx.screenshot({ path: OUT + '05-detalle-seguimiento.png' });
 // extras: 401 manual, error de validación
 await b.close();
