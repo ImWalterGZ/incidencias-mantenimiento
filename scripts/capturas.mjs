@@ -28,7 +28,7 @@ await p.screenshot({ path: OUT + '02-usuario-reporta.png' });
 const id = (await p.getByText(/Incidencia #\d+ registrada/).innerText()).match(/#(\d+)/)[1];
 console.log('id', id);
 // Las filas y tarjetas se ubican por id, no por descripción: así el script se puede repetir sobre la misma base.
-const porId = new RegExp('#' + id + '\\b');
+const porId = new RegExp('#' + id + '(?!\\d)'); // textContent pega '#5' al texto siguiente, así que no sirve \b
 const anaCtx = p;
 // elena
 p = await sesion('elena');
