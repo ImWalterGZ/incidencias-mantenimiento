@@ -1,0 +1,2132 @@
+{
+  "info": {
+    "name": "Incidencias: flujo y reglas de negocio",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Ejecutar en orden completo. Cada corrida crea una incidencia nueva mediante la API y descubre identidades sin IDs de usuarios fijos."
+  },
+  "item": [
+    {
+      "name": "00 Login de los 5 usuarios",
+      "item": [
+        {
+          "name": "Login ana",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"ana\", \"password\": \"Incidencias2026\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.clear();"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RNF1: token, vigencia e identidad de ana\", () => { const b=pm.response.json(); pm.expect(b.token).to.be.a('string').and.not.empty; pm.expect(b.expiraEnMs).to.be.above(0); pm.expect(b.usuario.username).to.eql('ana'); pm.expect(b.usuario.rol).to.eql('USUARIO'); pm.expect(b.usuario.id).to.be.a('number'); pm.expect(b.usuario.nombre).to.be.a('string').and.not.empty; pm.collectionVariables.set('token_ana',b.token); pm.collectionVariables.set('id_ana',b.usuario.id); pm.collectionVariables.set('nombre_ana',b.usuario.nombre); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login bruno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"bruno\", \"password\": \"Incidencias2026\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RNF1: token, vigencia e identidad de bruno\", () => { const b=pm.response.json(); pm.expect(b.token).to.be.a('string').and.not.empty; pm.expect(b.expiraEnMs).to.be.above(0); pm.expect(b.usuario.username).to.eql('bruno'); pm.expect(b.usuario.rol).to.eql('USUARIO'); pm.expect(b.usuario.id).to.be.a('number'); pm.expect(b.usuario.nombre).to.be.a('string').and.not.empty; pm.collectionVariables.set('token_bruno',b.token); pm.collectionVariables.set('id_bruno',b.usuario.id); pm.collectionVariables.set('nombre_bruno',b.usuario.nombre); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login carlos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"carlos\", \"password\": \"Incidencias2026\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RNF1: token, vigencia e identidad de carlos\", () => { const b=pm.response.json(); pm.expect(b.token).to.be.a('string').and.not.empty; pm.expect(b.expiraEnMs).to.be.above(0); pm.expect(b.usuario.username).to.eql('carlos'); pm.expect(b.usuario.rol).to.eql('TECNICO'); pm.expect(b.usuario.id).to.be.a('number'); pm.expect(b.usuario.nombre).to.be.a('string').and.not.empty; pm.collectionVariables.set('token_carlos',b.token); pm.collectionVariables.set('id_carlos',b.usuario.id); pm.collectionVariables.set('nombre_carlos',b.usuario.nombre); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login diana",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"diana\", \"password\": \"Incidencias2026\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RNF1: token, vigencia e identidad de diana\", () => { const b=pm.response.json(); pm.expect(b.token).to.be.a('string').and.not.empty; pm.expect(b.expiraEnMs).to.be.above(0); pm.expect(b.usuario.username).to.eql('diana'); pm.expect(b.usuario.rol).to.eql('TECNICO'); pm.expect(b.usuario.id).to.be.a('number'); pm.expect(b.usuario.nombre).to.be.a('string').and.not.empty; pm.collectionVariables.set('token_diana',b.token); pm.collectionVariables.set('id_diana',b.usuario.id); pm.collectionVariables.set('nombre_diana',b.usuario.nombre); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login elena",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"elena\", \"password\": \"Incidencias2026\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RNF1: token, vigencia e identidad de elena\", () => { const b=pm.response.json(); pm.expect(b.token).to.be.a('string').and.not.empty; pm.expect(b.expiraEnMs).to.be.above(0); pm.expect(b.usuario.username).to.eql('elena'); pm.expect(b.usuario.rol).to.eql('COORDINADOR'); pm.expect(b.usuario.id).to.be.a('number'); pm.expect(b.usuario.nombre).to.be.a('string').and.not.empty; pm.collectionVariables.set('token_elena',b.token); pm.collectionVariables.set('id_elena',b.usuario.id); pm.collectionVariables.set('nombre_elena',b.usuario.nombre); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 Registrar y validación",
+      "item": [
+        {
+          "name": "Consultar ubicaciones disponibles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/ubicaciones",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN1: catálogo contiene ubicaciones 1 a 6\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); [1,2,3,4,5,6].forEach(id=>pm.expect(b.map(x=>x.id)).to.include(id)); pm.collectionVariables.set('ubicacionId',b[0].id); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar incidencia propia de Ana",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"Luminaria sin funcionar sobre el pizarrón (prueba automatizada Postman)\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN2: HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"RN2: nace REPORTADA sin técnico y pertenece a Ana\", () => { const b=pm.response.json(); pm.expect(b.id).to.be.a('number'); pm.expect(b.estado).to.eql('REPORTADA'); pm.expect(b.tecnico).to.eql(null); pm.expect(b.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana'))); pm.collectionVariables.set('incidenciaId',b.id); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar registro por carlos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"Luminaria sin funcionar sobre el pizarrón (prueba automatizada Postman)\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar registro por elena",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"Luminaria sin funcionar sobre el pizarrón (prueba automatizada Postman)\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar campo obligatorio ausente: ubicacionId",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"categoria\": \"ELECTRICA\", \"descripcion\": \"Luminaria sin funcionar sobre el pizarrón (prueba automatizada Postman)\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: campos identifica ubicacionId\",()=>pm.expect(pm.response.json().campos).to.have.property('ubicacionId'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar campo obligatorio ausente: categoria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"descripcion\": \"Luminaria sin funcionar sobre el pizarrón (prueba automatizada Postman)\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: campos identifica categoria\",()=>pm.expect(pm.response.json().campos).to.have.property('categoria'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar campo obligatorio ausente: descripcion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: campos identifica descripcion\",()=>pm.expect(pm.response.json().campos).to.have.property('descripcion'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar campo obligatorio ausente: prioridad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"Luminaria sin funcionar sobre el pizarrón (prueba automatizada Postman)\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: campos identifica prioridad\",()=>pm.expect(pm.response.json().campos).to.have.property('prioridad'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar descripción vacía",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: campos identifica descripcion\",()=>pm.expect(pm.response.json().campos).to.have.property('descripcion'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar descripción menor a 10",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"123456789\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: campos identifica descripcion\",()=>pm.expect(pm.response.json().campos).to.have.property('descripcion'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar descripción mayor a 1000",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: campos identifica descripcion\",()=>pm.expect(pm.response.json().campos).to.have.property('descripcion'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar ubicación inexistente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": 9223372036854775807, \"categoria\": \"ELECTRICA\", \"descripcion\": \"Luminaria sin funcionar sobre el pizarrón (prueba automatizada Postman)\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 Consultar y visibilidad por rol",
+      "item": [
+        {
+          "name": "Listar ana",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de ana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana')))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar bruno",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_bruno}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de bruno\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.reportante.id).to.eql(Number(pm.collectionVariables.get('id_bruno')))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar carlos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de carlos\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_carlos')))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar diana",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_diana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de diana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_diana')))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar elena",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de elena\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar ana filtrando REPORTADA",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias?estado=REPORTADA",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de ana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana')))); b.forEach(x=>pm.expect(x.estado).to.eql('REPORTADA')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar elena filtrando RESUELTA",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias?estado=RESUELTA",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de elena\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.estado).to.eql('RESUELTA')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ana consulta su detalle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: detalle corresponde a la incidencia creada\",()=>pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get('incidenciaId'))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bruno no accede a detalle de Ana",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_bruno}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RN7: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bruno no accede a historial de Ana",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/historial",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_bruno}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RN7: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 Asignar técnico y negativos",
+      "item": [
+        {
+          "name": "Descubrir técnicos y contrastar identidades",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/usuarios?rol=TECNICO",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN3: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN3: Carlos y Diana son técnicos y sus IDs coinciden con login\",()=>{ const b=pm.response.json(); pm.expect(b).to.be.an('array'); b.forEach(x=>pm.expect(x.rol).to.eql('TECNICO')); ['carlos','diana'].forEach(u=>{const t=b.find(x=>x.username===u); pm.expect(t,u+' presente').to.exist; pm.expect(t.id).to.eql(Number(pm.collectionVariables.get('id_'+u))); pm.collectionVariables.set('tecnico_'+u,t.id); }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar asignación por ana",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/asignacion",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"tecnicoId\": \"{{tecnico_carlos}}\", \"comentario\": \"Asignación de prueba Postman\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN3 / RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RN3 / RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar asignación por carlos",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/asignacion",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"tecnicoId\": \"{{tecnico_carlos}}\", \"comentario\": \"Asignación de prueba Postman\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN3 / RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RN3 / RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar destino no técnico",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/asignacion",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"tecnicoId\": \"{{id_ana}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN3: HTTP 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"RN3: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Elena asigna a Carlos",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/asignacion",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"tecnicoId\": \"{{tecnico_carlos}}\", \"comentario\": \"Asignación de prueba Postman\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN3: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN3: ASIGNADA al técnico descubierto\",()=>{const b=pm.response.json(); pm.expect(b.estado).to.eql('ASIGNADA'); pm.expect(b.tecnico.id).to.eql(Number(pm.collectionVariables.get('tecnico_carlos'))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar reasignación a Diana",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/asignacion",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"tecnicoId\": \"{{tecnico_diana}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN3: HTTP 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"RN3: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar carlos filtrando ASIGNADA",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias?estado=ASIGNADA",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de carlos\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_carlos')))); b.forEach(x=>pm.expect(x.estado).to.eql('ASIGNADA')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar diana",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_diana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de diana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_diana')))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Diana no accede a detalle asignado a Carlos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_diana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RN7: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Diana no accede a historial asignado a Carlos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/historial",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_diana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RN7: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 Actualizar estado y negativos",
+      "item": [
+        {
+          "name": "Rechazar cambio por ana",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/estado",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"estado\": \"EN_PROCESO\", \"comentario\": \"Prueba de transición EN_PROCESO\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar cambio por elena",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/estado",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"estado\": \"EN_PROCESO\", \"comentario\": \"Prueba de transición EN_PROCESO\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar técnico no asignado",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/estado",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_diana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"estado\": \"EN_PROCESO\", \"comentario\": \"Prueba de transición EN_PROCESO\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN5: HTTP 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"RN5: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar salto a RESUELTA",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/estado",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"estado\": \"RESUELTA\", \"comentario\": \"Prueba de transición RESUELTA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN4: HTTP 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"RN4: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar ASIGNADA por endpoint de estado",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/estado",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"estado\": \"ASIGNADA\", \"comentario\": \"Prueba de transición ASIGNADA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN4: HTTP 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"RN4: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Carlos avanza a EN_PROCESO",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/estado",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"estado\": \"EN_PROCESO\", \"comentario\": \"Prueba de transición EN_PROCESO\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN4 / RN5: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN4: estado resultante EN_PROCESO\",()=>pm.expect(pm.response.json().estado).to.eql(\"EN_PROCESO\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar retroceso a REPORTADA",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/estado",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"estado\": \"REPORTADA\", \"comentario\": \"Prueba de transición REPORTADA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN4: HTTP 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"RN4: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Carlos resuelve",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/estado",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"estado\": \"RESUELTA\", \"comentario\": \"Prueba de transición RESUELTA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN4 / RN5: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN4: estado resultante RESUELTA\",()=>pm.expect(pm.response.json().estado).to.eql(\"RESUELTA\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar cambio desde estado final",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/estado",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"estado\": \"EN_PROCESO\", \"comentario\": \"Prueba de transición EN_PROCESO\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN4: HTTP 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"RN4: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 Consultar seguimiento",
+      "item": [
+        {
+          "name": "Historial completo visible para ana",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/historial",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN6 / RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN6: exactamente cuatro filas en orden y encadenadas\",()=>{const b=pm.response.json(); pm.expect(b).to.be.an('array').with.lengthOf(4); pm.expect(b.map(x=>x.estadoNuevo)).to.eql(['REPORTADA','ASIGNADA','EN_PROCESO','RESUELTA']); pm.expect(b.map(x=>x.estadoAnterior)).to.eql([null,'REPORTADA','ASIGNADA','EN_PROCESO']); });",
+                  "pm.test(\"RN6: realizadoPor es Ana, Elena, Carlos y Carlos\",()=>{const b=pm.response.json(); pm.expect(b.map(x=>x.realizadoPor)).to.eql(['ana','elena','carlos','carlos'].map(u=>pm.collectionVariables.get('nombre_'+u))); pm.expect(b.map(x=>x.rolRealizadoPor)).to.eql(['USUARIO','COORDINADOR','TECNICO','TECNICO']); });",
+                  "pm.test(\"RN6: fechas válidas y cronológicas\",()=>{const b=pm.response.json(); b.forEach((x,i)=>{pm.expect(Number.isNaN(Date.parse(x.fecha))).to.eql(false); if(i) pm.expect(Date.parse(x.fecha)).to.be.at.least(Date.parse(b[i-1].fecha)); }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Historial completo visible para elena",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/historial",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN6 / RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN6: exactamente cuatro filas en orden y encadenadas\",()=>{const b=pm.response.json(); pm.expect(b).to.be.an('array').with.lengthOf(4); pm.expect(b.map(x=>x.estadoNuevo)).to.eql(['REPORTADA','ASIGNADA','EN_PROCESO','RESUELTA']); pm.expect(b.map(x=>x.estadoAnterior)).to.eql([null,'REPORTADA','ASIGNADA','EN_PROCESO']); });",
+                  "pm.test(\"RN6: realizadoPor es Ana, Elena, Carlos y Carlos\",()=>{const b=pm.response.json(); pm.expect(b.map(x=>x.realizadoPor)).to.eql(['ana','elena','carlos','carlos'].map(u=>pm.collectionVariables.get('nombre_'+u))); pm.expect(b.map(x=>x.rolRealizadoPor)).to.eql(['USUARIO','COORDINADOR','TECNICO','TECNICO']); });",
+                  "pm.test(\"RN6: fechas válidas y cronológicas\",()=>{const b=pm.response.json(); b.forEach((x,i)=>{pm.expect(Number.isNaN(Date.parse(x.fecha))).to.eql(false); if(i) pm.expect(Date.parse(x.fecha)).to.be.at.least(Date.parse(b[i-1].fecha)); }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Historial completo visible para carlos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}/historial",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN6 / RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN6: exactamente cuatro filas en orden y encadenadas\",()=>{const b=pm.response.json(); pm.expect(b).to.be.an('array').with.lengthOf(4); pm.expect(b.map(x=>x.estadoNuevo)).to.eql(['REPORTADA','ASIGNADA','EN_PROCESO','RESUELTA']); pm.expect(b.map(x=>x.estadoAnterior)).to.eql([null,'REPORTADA','ASIGNADA','EN_PROCESO']); });",
+                  "pm.test(\"RN6: realizadoPor es Ana, Elena, Carlos y Carlos\",()=>{const b=pm.response.json(); pm.expect(b.map(x=>x.realizadoPor)).to.eql(['ana','elena','carlos','carlos'].map(u=>pm.collectionVariables.get('nombre_'+u))); pm.expect(b.map(x=>x.rolRealizadoPor)).to.eql(['USUARIO','COORDINADOR','TECNICO','TECNICO']); });",
+                  "pm.test(\"RN6: fechas válidas y cronológicas\",()=>{const b=pm.response.json(); b.forEach((x,i)=>{pm.expect(Number.isNaN(Date.parse(x.fecha))).to.eql(false); if(i) pm.expect(Date.parse(x.fecha)).to.be.at.least(Date.parse(b[i-1].fecha)); }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar ana filtrando RESUELTA",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias?estado=RESUELTA",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de ana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana')))); b.forEach(x=>pm.expect(x.estado).to.eql('RESUELTA')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar carlos filtrando RESUELTA",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias?estado=RESUELTA",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_carlos}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de carlos\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_carlos')))); b.forEach(x=>pm.expect(x.estado).to.eql('RESUELTA')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar elena filtrando RESUELTA",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias?estado=RESUELTA",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de elena\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.estado).to.eql('RESUELTA')); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar detalle final",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaId}}",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN4 / RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN4: detalle final RESUELTA conserva reportante y técnico\",()=>{const b=pm.response.json(); pm.expect(b.id).to.eql(Number(pm.collectionVariables.get('incidenciaId'))); pm.expect(b.estado).to.eql('RESUELTA'); pm.expect(b.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana'))); pm.expect(b.tecnico.id).to.eql(Number(pm.collectionVariables.get('tecnico_carlos'))); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 Seguridad",
+      "item": [
+        {
+          "name": "Sin token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Token basura",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "basura",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Credenciales malas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"ana\", \"password\": \"incorrecta\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RNF1: HTTP 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": []
+}

@@ -1,0 +1,323 @@
+newman
+
+Incidencias: flujo y reglas de negocio
+
+❏ 00 Login de los 5 usuarios
+↳ Login ana
+  POST http://localhost:8081/api/v1/auth/login [200 OK, 753B, 122ms]
+  ✓  RNF1: HTTP 200
+  ✓  RNF1: token, vigencia e identidad de ana
+
+↳ Login bruno
+  POST http://localhost:8081/api/v1/auth/login [200 OK, 762B, 96ms]
+  ✓  RNF1: HTTP 200
+  ✓  RNF1: token, vigencia e identidad de bruno
+
+↳ Login carlos
+  POST http://localhost:8081/api/v1/auth/login [200 OK, 769B, 98ms]
+  ✓  RNF1: HTTP 200
+  ✓  RNF1: token, vigencia e identidad de carlos
+
+↳ Login diana
+  POST http://localhost:8081/api/v1/auth/login [200 OK, 757B, 79ms]
+  ✓  RNF1: HTTP 200
+  ✓  RNF1: token, vigencia e identidad de diana
+
+↳ Login elena
+  POST http://localhost:8081/api/v1/auth/login [200 OK, 774B, 74ms]
+  ✓  RNF1: HTTP 200
+  ✓  RNF1: token, vigencia e identidad de elena
+
+❏ 01 Registrar y validación
+↳ Consultar ubicaciones disponibles
+  GET http://localhost:8081/api/v1/ubicaciones [200 OK, 901B, 8ms]
+  ✓  RN1: HTTP 200
+  ✓  RN1: catálogo contiene ubicaciones 1 a 6
+
+↳ Registrar incidencia propia de Ana
+  POST http://localhost:8081/api/v1/incidencias [201 Created, 833B, 10ms]
+  ✓  RN2: HTTP 201
+  ✓  RN2: nace REPORTADA sin técnico y pertenece a Ana
+
+↳ Rechazar registro por carlos
+  POST http://localhost:8081/api/v1/incidencias [403 Forbidden, 544B, 5ms]
+  ✓  RNF1: HTTP 403
+  ✓  RNF1: error con message, httpStatus y timestamp
+
+↳ Rechazar registro por elena
+  POST http://localhost:8081/api/v1/incidencias [403 Forbidden, 544B, 4ms]
+  ✓  RNF1: HTTP 403
+  ✓  RNF1: error con message, httpStatus y timestamp
+
+↳ Rechazar campo obligatorio ausente: ubicacionId
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 546B, 6ms]
+  ✓  RN1: HTTP 400
+  ✓  RN1: error con message, httpStatus y timestamp
+  ✓  RN1: campos identifica ubicacionId
+
+↳ Rechazar campo obligatorio ausente: categoria
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 544B, 6ms]
+  ✓  RN1: HTTP 400
+  ✓  RN1: error con message, httpStatus y timestamp
+  ✓  RN1: campos identifica categoria
+
+↳ Rechazar campo obligatorio ausente: descripcion
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 548B, 7ms]
+  ✓  RN1: HTTP 400
+  ✓  RN1: error con message, httpStatus y timestamp
+  ✓  RN1: campos identifica descripcion
+
+↳ Rechazar campo obligatorio ausente: prioridad
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 543B, 7ms]
+  ✓  RN1: HTTP 400
+  ✓  RN1: error con message, httpStatus y timestamp
+  ✓  RN1: campos identifica prioridad
+
+↳ Rechazar descripción vacía
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 548B, 6ms]
+  ✓  RN1: HTTP 400
+  ✓  RN1: error con message, httpStatus y timestamp
+  ✓  RN1: campos identifica descripcion
+
+↳ Rechazar descripción menor a 10
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 571B, 6ms]
+  ✓  RN1: HTTP 400
+  ✓  RN1: error con message, httpStatus y timestamp
+  ✓  RN1: campos identifica descripcion
+
+↳ Rechazar descripción mayor a 1000
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 571B, 6ms]
+  ✓  RN1: HTTP 400
+  ✓  RN1: error con message, httpStatus y timestamp
+  ✓  RN1: campos identifica descripcion
+
+↳ Rechazar ubicación inexistente
+  POST http://localhost:8081/api/v1/incidencias [422 Unprocessable Entity (WebDAV) (RFC 4918), 565B, 6ms]
+  ✓  RN1: HTTP 422
+  ✓  RN1: error con message, httpStatus y timestamp
+
+❏ 02 Consultar y visibilidad por rol
+↳ Listar ana
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 2.62kB, 8ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de ana
+
+↳ Listar bruno
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 1.27kB, 7ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de bruno
+
+↳ Listar carlos
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 1.78kB, 8ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de carlos
+
+↳ Listar diana
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 1.32kB, 8ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de diana
+
+↳ Listar elena
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 3.46kB, 7ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de elena
+
+↳ Listar ana filtrando REPORTADA
+  GET http://localhost:8081/api/v1/incidencias?estado=REPORTADA [200 OK, 805B, 7ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de ana
+
+↳ Listar elena filtrando RESUELTA
+  GET http://localhost:8081/api/v1/incidencias?estado=RESUELTA [200 OK, 1.78kB, 7ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de elena
+
+↳ Ana consulta su detalle
+  GET http://localhost:8081/api/v1/incidencias/7 [200 OK, 803B, 5ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: detalle corresponde a la incidencia creada
+
+↳ Bruno no accede a detalle de Ana
+  GET http://localhost:8081/api/v1/incidencias/7 [403 Forbidden, 530B, 7ms]
+  ✓  RN7: HTTP 403
+  ✓  RN7: error con message, httpStatus y timestamp
+
+↳ Bruno no accede a historial de Ana
+  GET http://localhost:8081/api/v1/incidencias/7/historial [403 Forbidden, 530B, 5ms]
+  ✓  RN7: HTTP 403
+  ✓  RN7: error con message, httpStatus y timestamp
+
+❏ 03 Asignar técnico y negativos
+↳ Descubrir técnicos y contrastar identidades
+  GET http://localhost:8081/api/v1/usuarios?rol=TECNICO [200 OK, 561B, 6ms]
+  ✓  RN3: HTTP 200
+  ✓  RN3: Carlos y Diana son técnicos y sus IDs coinciden con login
+
+↳ Rechazar asignación por ana
+  PATCH http://localhost:8081/api/v1/incidencias/7/asignacion [403 Forbidden, 544B, 5ms]
+  ✓  RN3 / RNF1: HTTP 403
+  ✓  RN3 / RNF1: error con message, httpStatus y timestamp
+
+↳ Rechazar asignación por carlos
+  PATCH http://localhost:8081/api/v1/incidencias/7/asignacion [403 Forbidden, 544B, 4ms]
+  ✓  RN3 / RNF1: HTTP 403
+  ✓  RN3 / RNF1: error con message, httpStatus y timestamp
+
+↳ Rechazar destino no técnico
+  PATCH http://localhost:8081/api/v1/incidencias/7/asignacion [422 Unprocessable Entity (WebDAV) (RFC 4918), 588B, 7ms]
+  ✓  RN3: HTTP 422
+  ✓  RN3: error con message, httpStatus y timestamp
+
+↳ Elena asigna a Carlos
+  PATCH http://localhost:8081/api/v1/incidencias/7/asignacion [200 OK, 868B, 9ms]
+  ✓  RN3: HTTP 200
+  ✓  RN3: ASIGNADA al técnico descubierto
+
+↳ Rechazar reasignación a Diana
+  PATCH http://localhost:8081/api/v1/incidencias/7/asignacion [409 Conflict, 552B, 8ms]
+  ✓  RN3: HTTP 409
+  ✓  RN3: error con message, httpStatus y timestamp
+
+↳ Listar carlos filtrando ASIGNADA
+  GET http://localhost:8081/api/v1/incidencias?estado=ASIGNADA [200 OK, 1.33kB, 9ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de carlos
+
+↳ Listar diana
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 1.32kB, 8ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de diana
+
+↳ Diana no accede a detalle asignado a Carlos
+  GET http://localhost:8081/api/v1/incidencias/7 [403 Forbidden, 530B, 6ms]
+  ✓  RN7: HTTP 403
+  ✓  RN7: error con message, httpStatus y timestamp
+
+↳ Diana no accede a historial asignado a Carlos
+  GET http://localhost:8081/api/v1/incidencias/7/historial [403 Forbidden, 530B, 6ms]
+  ✓  RN7: HTTP 403
+  ✓  RN7: error con message, httpStatus y timestamp
+
+❏ 04 Actualizar estado y negativos
+↳ Rechazar cambio por ana
+  PATCH http://localhost:8081/api/v1/incidencias/7/estado [403 Forbidden, 544B, 3ms]
+  ✓  RNF1: HTTP 403
+  ✓  RNF1: error con message, httpStatus y timestamp
+
+↳ Rechazar cambio por elena
+  PATCH http://localhost:8081/api/v1/incidencias/7/estado [403 Forbidden, 544B, 3ms]
+  ✓  RNF1: HTTP 403
+  ✓  RNF1: error con message, httpStatus y timestamp
+
+↳ Rechazar técnico no asignado
+  PATCH http://localhost:8081/api/v1/incidencias/7/estado [403 Forbidden, 551B, 6ms]
+  ✓  RN5: HTTP 403
+  ✓  RN5: error con message, httpStatus y timestamp
+
+↳ Rechazar salto a RESUELTA
+  PATCH http://localhost:8081/api/v1/incidencias/7/estado [409 Conflict, 564B, 6ms]
+  ✓  RN4: HTTP 409
+  ✓  RN4: error con message, httpStatus y timestamp
+
+↳ Rechazar ASIGNADA por endpoint de estado
+  PATCH http://localhost:8081/api/v1/incidencias/7/estado [409 Conflict, 554B, 6ms]
+  ✓  RN4: HTTP 409
+  ✓  RN4: error con message, httpStatus y timestamp
+
+↳ Carlos avanza a EN_PROCESO
+  PATCH http://localhost:8081/api/v1/incidencias/7/estado [200 OK, 870B, 9ms]
+  ✓  RN4 / RN5: HTTP 200
+  ✓  RN4: estado resultante EN_PROCESO
+
+↳ Rechazar retroceso a REPORTADA
+  PATCH http://localhost:8081/api/v1/incidencias/7/estado [409 Conflict, 564B, 6ms]
+  ✓  RN4: HTTP 409
+  ✓  RN4: error con message, httpStatus y timestamp
+
+↳ Carlos resuelve
+  PATCH http://localhost:8081/api/v1/incidencias/7/estado [200 OK, 868B, 10ms]
+  ✓  RN4 / RN5: HTTP 200
+  ✓  RN4: estado resultante RESUELTA
+
+↳ Rechazar cambio desde estado final
+  PATCH http://localhost:8081/api/v1/incidencias/7/estado [409 Conflict, 553B, 7ms]
+  ✓  RN4: HTTP 409
+  ✓  RN4: error con message, httpStatus y timestamp
+
+❏ 05 Consultar seguimiento
+↳ Historial completo visible para ana
+  GET http://localhost:8081/api/v1/incidencias/7/historial [200 OK, 1.22kB, 10ms]
+  ✓  RN6 / RN7: HTTP 200
+  ✓  RN6: exactamente cuatro filas en orden y encadenadas
+  ✓  RN6: realizadoPor es Ana, Elena, Carlos y Carlos
+  ✓  RN6: fechas válidas y cronológicas
+
+↳ Historial completo visible para elena
+  GET http://localhost:8081/api/v1/incidencias/7/historial [200 OK, 1.22kB, 10ms]
+  ✓  RN6 / RN7: HTTP 200
+  ✓  RN6: exactamente cuatro filas en orden y encadenadas
+  ✓  RN6: realizadoPor es Ana, Elena, Carlos y Carlos
+  ✓  RN6: fechas válidas y cronológicas
+
+↳ Historial completo visible para carlos
+  GET http://localhost:8081/api/v1/incidencias/7/historial [200 OK, 1.22kB, 8ms]
+  ✓  RN6 / RN7: HTTP 200
+  ✓  RN6: exactamente cuatro filas en orden y encadenadas
+  ✓  RN6: realizadoPor es Ana, Elena, Carlos y Carlos
+  ✓  RN6: fechas válidas y cronológicas
+
+↳ Listar ana filtrando RESUELTA
+  GET http://localhost:8081/api/v1/incidencias?estado=RESUELTA [200 OK, 2.22kB, 9ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de ana
+
+↳ Listar carlos filtrando RESUELTA
+  GET http://localhost:8081/api/v1/incidencias?estado=RESUELTA [200 OK, 1.77kB, 9ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de carlos
+
+↳ Listar elena filtrando RESUELTA
+  GET http://localhost:8081/api/v1/incidencias?estado=RESUELTA [200 OK, 2.22kB, 8ms]
+  ✓  RN7: HTTP 200
+  ✓  RN7: lista restringida al rol de elena
+
+↳ Consultar detalle final
+  GET http://localhost:8081/api/v1/incidencias/7 [200 OK, 868B, 7ms]
+  ✓  RN4 / RN7: HTTP 200
+  ✓  RN4: detalle final RESUELTA conserva reportante y técnico
+
+❏ 06 Seguridad
+↳ Sin token
+  GET http://localhost:8081/api/v1/incidencias [401 Unauthorized, 538B, 3ms]
+  ✓  RNF1: HTTP 401
+  ✓  RNF1: error con message, httpStatus y timestamp
+
+↳ Token basura
+  GET http://localhost:8081/api/v1/incidencias [401 Unauthorized, 538B, 2ms]
+  ✓  RNF1: HTTP 401
+  ✓  RNF1: error con message, httpStatus y timestamp
+
+↳ Credenciales malas
+  POST http://localhost:8081/api/v1/auth/login [401 Unauthorized, 538B, 78ms]
+  ✓  RNF1: HTTP 401
+  ✓  RNF1: error con message, httpStatus y timestamp
+
+┌─────────────────────────┬───────────────────┬──────────────────┐
+│                         │          executed │           failed │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              iterations │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│                requests │                56 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│            test-scripts │                56 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│      prerequest-scripts │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              assertions │               125 │                0 │
+├─────────────────────────┴───────────────────┴──────────────────┤
+│ total run duration: 1671ms                                     │
+├────────────────────────────────────────────────────────────────┤
+│ total data received: 27.48kB (approx)                          │
+├────────────────────────────────────────────────────────────────┤
+│ average response time: 15ms [min: 2ms, max: 122ms, s.d.: 26ms] │
+└────────────────────────────────────────────────────────────────┘
