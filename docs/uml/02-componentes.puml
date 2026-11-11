@@ -9,7 +9,9 @@ package "Frontend · Angular (SPA)" {
   [DetalleIncidenciaComponent] as FDet
   [IncidenciaApiService] as FApi
   [AuthService + authInterceptor] as FAuth
+  [roleGuard] as FGuard
   FLogin --> FAuth
+  FGuard ..> FAuth : lee rol
   FUsr --> FApi
   FCoord --> FApi
   FTec --> FApi
@@ -21,7 +23,9 @@ package "Backend · Spring Boot" {
     [JwtAuthenticationFilter] as Filtro
     [SecurityConfig] as SecCfg
     [JwtUtil] as Jwt
+    [UserDetailsServiceImpl] as UDS
     Filtro --> Jwt
+    Filtro --> UDS
   }
   package "controller" {
     [AuthController] as CAuth
@@ -47,7 +51,8 @@ package "Backend · Spring Boot" {
   CUbi --> SUbi
   CUsr --> SUsr
   SAuth --> Jwt
-  SAuth --> RUsr
+  SAuth --> UDS : vía AuthenticationManager
+  UDS --> RUsr
   SInc --> RInc
   SInc --> RHis
   SInc --> RUbi

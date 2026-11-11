@@ -41,6 +41,12 @@ entity historial_estado_incidencia {
   comentario : varchar(500)
   * fecha : timestamptz
 }
+note right of incidencia
+  CHECK incidencia_tecnico_segun_estado:
+  (estado = 'REPORTADA') = (tecnico_id IS NULL)
+  La base rechaza una incidencia asignada
+  sin técnico o una reportada con técnico.
+end note
 ubicacion ||--o{ incidencia
 usuario ||--o{ incidencia : reporta
 usuario |o--o{ incidencia : atiende
