@@ -61,6 +61,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // El despacho interno de errores no debe exigir sesión: si no, un 400 o 500 llega como 401.
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers(basePath + "/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, incidencias).hasRole(Rol.USUARIO.name())

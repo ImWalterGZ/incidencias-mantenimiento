@@ -8,6 +8,9 @@ public final class Constants {
     public static final String NO_AUTENTICADO = "Se requiere iniciar sesión";
     public static final String ACCESO_DENEGADO = "No tienes permiso para esta operación";
     public static final String DATOS_INVALIDOS = "Datos inválidos";
+    public static final String ERROR_INTERNO = "Ocurrió un error inesperado; intenta de nuevo";
+    /** Texto libre sin byte nulo, que PostgreSQL no acepta en columnas de texto. Los saltos de línea sí se permiten. */
+    public static final String TEXTO_SIN_NULOS = "[^\\x00]*";
 
     public static final String INCIDENCIA_NO_ENCONTRADA = "La incidencia no existe";
     public static final String INCIDENCIA_AJENA = "La incidencia no te corresponde";

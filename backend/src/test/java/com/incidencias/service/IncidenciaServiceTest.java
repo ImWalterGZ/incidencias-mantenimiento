@@ -110,7 +110,7 @@ class IncidenciaServiceTest {
     @DisplayName("RN3: asignar pasa de REPORTADA a ASIGNADA y registra quién asignó")
     void asignarTecnico() {
         IncidenciaModel inc = incidencia(EstadoIncidencia.REPORTADA, null);
-        when(incidenciaRepository.findById(10L)).thenReturn(Optional.of(inc));
+        when(incidenciaRepository.findByIdParaActualizar(10L)).thenReturn(Optional.of(inc));
         when(usuarioRepository.findById(3L)).thenReturn(Optional.of(carlos));
 
         IncidenciaResponseDto dto = service.asignar(10L, new AsignacionRequestDto(3L, null), elena);
@@ -126,7 +126,7 @@ class IncidenciaServiceTest {
     @Test
     @DisplayName("RN3: no se asigna a alguien que no es técnico (422)")
     void asignarANoTecnico() {
-        when(incidenciaRepository.findById(10L)).thenReturn(Optional.of(incidencia(EstadoIncidencia.REPORTADA, null)));
+        when(incidenciaRepository.findByIdParaActualizar(10L)).thenReturn(Optional.of(incidencia(EstadoIncidencia.REPORTADA, null)));
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(ana));
 
         assertError(() -> service.asignar(10L, new AsignacionRequestDto(1L, null), elena),
@@ -136,7 +136,7 @@ class IncidenciaServiceTest {
     @Test
     @DisplayName("RN3: no hay reasignación; una incidencia ya ASIGNADA responde 409")
     void noSeReasigna() {
-        when(incidenciaRepository.findById(10L)).thenReturn(Optional.of(incidencia(EstadoIncidencia.ASIGNADA, carlos)));
+        when(incidenciaRepository.findByIdParaActualizar(10L)).thenReturn(Optional.of(incidencia(EstadoIncidencia.ASIGNADA, carlos)));
 
         assertError(() -> service.asignar(10L, new AsignacionRequestDto(4L, null), elena), HttpStatus.CONFLICT);
     }
@@ -145,7 +145,7 @@ class IncidenciaServiceTest {
     @DisplayName("RN4: el técnico avanza ASIGNADA → EN_PROCESO → RESUELTA")
     void avanzarEstados() {
         IncidenciaModel inc = incidencia(EstadoIncidencia.ASIGNADA, carlos);
-        when(incidenciaRepository.findById(10L)).thenReturn(Optional.of(inc));
+        when(incidenciaRepository.findByIdParaActualizar(10L)).thenReturn(Optional.of(inc));
 
         assertThat(service.cambiarEstado(10L, new CambioEstadoRequestDto(EstadoIncidencia.EN_PROCESO, null), carlos)
                 .estado()).isEqualTo(EstadoIncidencia.EN_PROCESO);
@@ -157,7 +157,7 @@ class IncidenciaServiceTest {
     @Test
     @DisplayName("RN4: saltar de ASIGNADA a RESUELTA responde 409")
     void noSeSaltanEstados() {
-        when(incidenciaRepository.findById(10L)).thenReturn(Optional.of(incidencia(EstadoIncidencia.ASIGNADA, carlos)));
+        when(incidenciaRepository.findByIdParaActualizar(10L)).thenReturn(Optional.of(incidencia(EstadoIncidencia.ASIGNADA, carlos)));
 
         assertError(() -> service.cambiarEstado(10L,
                 new CambioEstadoRequestDto(EstadoIncidencia.RESUELTA, null), carlos), HttpStatus.CONFLICT);
@@ -166,7 +166,7 @@ class IncidenciaServiceTest {
     @Test
     @DisplayName("RN4: una incidencia RESUELTA ya no cambia (409)")
     void resueltaEsFinal() {
-        when(incidenciaRepository.findById(10L)).thenReturn(Optional.of(incidencia(EstadoIncidencia.RESUELTA, carlos)));
+        when(incidenciaRepository.findByIdParaActualizar(10L)).thenReturn(Optional.of(incidencia(EstadoIncidencia.RESUELTA, carlos)));
 
         assertError(() -> service.cambiarEstado(10L,
                 new CambioEstadoRequestDto(EstadoIncidencia.EN_PROCESO, null), carlos), HttpStatus.CONFLICT);
@@ -175,7 +175,7 @@ class IncidenciaServiceTest {
     @Test
     @DisplayName("RN5: otro técnico no puede cambiar el estado (403)")
     void soloElTecnicoAsignado() {
-        when(incidenciaRepository.findById(10L)).thenReturn(Optional.of(incidencia(EstadoIncidencia.ASIGNADA, carlos)));
+        when(incidenciaRepository.findByIdParaActualizar(10L)).thenReturn(Optional.of(incidencia(EstadoIncidencia.ASIGNADA, carlos)));
 
         assertError(() -> service.cambiarEstado(10L,
                 new CambioEstadoRequestDto(EstadoIncidencia.EN_PROCESO, null), diana), HttpStatus.FORBIDDEN);

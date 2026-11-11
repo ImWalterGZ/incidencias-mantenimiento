@@ -68,7 +68,7 @@ public class IncidenciaService {
         incidencia.setUbicacion(ubicacion);
         incidencia.setReportante(reportante);
         incidencia.setCategoria(dto.categoria());
-        incidencia.setDescripcion(dto.descripcion().trim());
+        incidencia.setDescripcion(dto.descripcion());
         incidencia.setPrioridad(dto.prioridad());
         incidencia.setEstado(EstadoIncidencia.REPORTADA);
         incidencia.setFechaReporte(ahora);
@@ -102,7 +102,7 @@ public class IncidenciaService {
 
     @Transactional
     public IncidenciaResponseDto asignar(Long id, AsignacionRequestDto dto, UsuarioModel coordinador) {
-        IncidenciaModel incidencia = obtener(id);
+        IncidenciaModel incidencia = obtenerParaActualizar(id);
         if (incidencia.getEstado() != EstadoIncidencia.REPORTADA) {
             throw BusinessException.of(SOLO_REPORTADA_SE_ASIGNA, HttpStatus.CONFLICT);
         }
@@ -120,7 +120,7 @@ public class IncidenciaService {
 
     @Transactional
     public IncidenciaResponseDto cambiarEstado(Long id, CambioEstadoRequestDto dto, UsuarioModel tecnico) {
-        IncidenciaModel incidencia = obtener(id);
+        IncidenciaModel incidencia = obtenerParaActualizar(id);
         if (incidencia.getTecnico() == null || !Objects.equals(incidencia.getTecnico().getId(), tecnico.getId())) {
             throw BusinessException.of(NO_ES_TECNICO_ASIGNADO, HttpStatus.FORBIDDEN);
         }
@@ -144,6 +144,12 @@ public class IncidenciaService {
 
     private IncidenciaModel obtener(Long id) {
         return incidenciaRepository.findById(id)
+                .orElseThrow(() -> BusinessException.of(INCIDENCIA_NO_ENCONTRADA, HttpStatus.NOT_FOUND));
+    }
+
+    /** Bloquea la fila hasta el fin de la transacción para que dos cambios simultáneos no pasen la misma regla. */
+    private IncidenciaModel obtenerParaActualizar(Long id) {
+        return incidenciaRepository.findByIdParaActualizar(id)
                 .orElseThrow(() -> BusinessException.of(INCIDENCIA_NO_ENCONTRADA, HttpStatus.NOT_FOUND));
     }
 
