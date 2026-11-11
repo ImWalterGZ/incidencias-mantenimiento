@@ -2,7 +2,7 @@
   "info": {
     "name": "Incidencias: flujo y reglas de negocio",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Ejecutar en orden completo. Cada corrida crea una incidencia nueva mediante la API y descubre identidades sin IDs de usuarios fijos."
+    "description": "Ejecutar en orden completo. Cada corrida crea fixtures propios de Ana y Bruno y una incidencia con saltos de línea; descubre identidades sin IDs fijos."
   },
   "item": [
     {
@@ -275,7 +275,53 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN2: HTTP 201\", () => pm.response.to.have.status(201));",
-                  "pm.test(\"RN2: nace REPORTADA sin técnico y pertenece a Ana\", () => { const b=pm.response.json(); pm.expect(b.id).to.be.a('number'); pm.expect(b.estado).to.eql('REPORTADA'); pm.expect(b.tecnico).to.eql(null); pm.expect(b.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana'))); pm.collectionVariables.set('incidenciaId',b.id); });"
+                  "pm.test(\"RN2: nace REPORTADA sin técnico y pertenece a Ana\", () => { const b=pm.response.json(); pm.expect(b.id).to.be.a('number'); pm.expect(b.estado).to.eql('REPORTADA'); pm.expect(b.tecnico).to.eql(null); pm.expect(b.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana'))); pm.collectionVariables.set('incidenciaId',b.id); });",
+                  "pm.test('RN1 / RN2: datos creados coinciden con la solicitud',()=>{const b=pm.response.json(), q=JSON.parse(pm.variables.replaceIn(pm.request.body.raw)); pm.expect(b.descripcion).to.eql(q.descripcion); pm.expect(b.categoria).to.eql(q.categoria); pm.expect(b.prioridad).to.eql(q.prioridad); pm.expect(b.ubicacion.id).to.eql(Number(q.ubicacionId)); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar incidencia propia de Bruno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_bruno}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"Luminaria sin funcionar sobre el pizarrón (prueba automatizada Postman)\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN2: HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"RN2: nace REPORTADA sin técnico y pertenece a Bruno\", () => { const b=pm.response.json(); pm.expect(b.id).to.be.a('number'); pm.expect(b.estado).to.eql('REPORTADA'); pm.expect(b.tecnico).to.eql(null); pm.expect(b.reportante.id).to.eql(Number(pm.collectionVariables.get('id_bruno'))); pm.collectionVariables.set('incidenciaBrunoId',b.id); });",
+                  "pm.test('RN1 / RN2: datos creados coinciden con la solicitud',()=>{const b=pm.response.json(), q=JSON.parse(pm.variables.replaceIn(pm.request.body.raw)); pm.expect(b.descripcion).to.eql(q.descripcion); pm.expect(b.categoria).to.eql(q.categoria); pm.expect(b.prioridad).to.eql(q.prioridad); pm.expect(b.ubicacion.id).to.eql(Number(q.ubicacionId)); });"
                 ]
               }
             }
@@ -319,7 +365,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RNF1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -363,7 +409,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RNF1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -407,7 +453,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
-                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^400 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });",
                   "pm.test(\"RN1: campos identifica ubicacionId\",()=>pm.expect(pm.response.json().campos).to.have.property('ubicacionId'));"
                 ]
               }
@@ -452,7 +498,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
-                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^400 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });",
                   "pm.test(\"RN1: campos identifica categoria\",()=>pm.expect(pm.response.json().campos).to.have.property('categoria'));"
                 ]
               }
@@ -497,7 +543,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
-                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^400 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });",
                   "pm.test(\"RN1: campos identifica descripcion\",()=>pm.expect(pm.response.json().campos).to.have.property('descripcion'));"
                 ]
               }
@@ -542,7 +588,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
-                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^400 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });",
                   "pm.test(\"RN1: campos identifica prioridad\",()=>pm.expect(pm.response.json().campos).to.have.property('prioridad'));"
                 ]
               }
@@ -587,7 +633,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
-                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^400 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });",
                   "pm.test(\"RN1: campos identifica descripcion\",()=>pm.expect(pm.response.json().campos).to.have.property('descripcion'));"
                 ]
               }
@@ -632,7 +678,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
-                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^400 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });",
                   "pm.test(\"RN1: campos identifica descripcion\",()=>pm.expect(pm.response.json().campos).to.have.property('descripcion'));"
                 ]
               }
@@ -677,7 +723,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
-                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^400 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });",
                   "pm.test(\"RN1: campos identifica descripcion\",()=>pm.expect(pm.response.json().campos).to.have.property('descripcion'));"
                 ]
               }
@@ -722,7 +768,142 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN1: HTTP 422\", () => pm.response.to.have.status(422));",
-                  "pm.test(\"RN1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^422 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar descripción con byte nulo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"Falla con \\u0000 byte nulo\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^400 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: campos identifica descripcion\",()=>pm.expect(pm.response.json().campos).to.have.property('descripcion'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar descripción corta después de recortar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"         x\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN1: HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^400 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });",
+                  "pm.test(\"RN1: campos identifica descripcion\",()=>pm.expect(pm.response.json().campos).to.have.property('descripcion'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registrar descripción válida con saltos de línea",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ubicacionId\": \"{{ubicacionId}}\", \"categoria\": \"ELECTRICA\", \"descripcion\": \"Falla de luminaria\\nRevisar cableado del salón\", \"prioridad\": \"MEDIA\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN2: HTTP 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"RN2: nace REPORTADA sin técnico y pertenece a Ana\", () => { const b=pm.response.json(); pm.expect(b.id).to.be.a('number'); pm.expect(b.estado).to.eql('REPORTADA'); pm.expect(b.tecnico).to.eql(null); pm.expect(b.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana')));  });",
+                  "pm.test('RN1 / RN2: datos creados coinciden con la solicitud',()=>{const b=pm.response.json(), q=JSON.parse(pm.variables.replaceIn(pm.request.body.raw)); pm.expect(b.descripcion).to.eql(q.descripcion); pm.expect(b.categoria).to.eql(q.categoria); pm.expect(b.prioridad).to.eql(q.prioridad); pm.expect(b.ubicacion.id).to.eql(Number(q.ubicacionId)); });"
                 ]
               }
             }
@@ -757,7 +938,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"RN7: lista restringida al rol de ana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana')))); });"
+                  "pm.test(\"RN7: lista restringida al rol de ana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana')))); });",
+                  "pm.test('RN7: presencia y ausencia explícitas de ambos fixtures',()=>{const ids=pm.response.json().map(x=>x.id); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaId'))),'fixture Ana').to.eql(true); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaBrunoId'))),'fixture Bruno').to.eql(false); });"
                 ]
               }
             }
@@ -787,7 +969,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"RN7: lista restringida al rol de bruno\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.reportante.id).to.eql(Number(pm.collectionVariables.get('id_bruno')))); });"
+                  "pm.test(\"RN7: lista restringida al rol de bruno\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.reportante.id).to.eql(Number(pm.collectionVariables.get('id_bruno')))); });",
+                  "pm.test('RN7: presencia y ausencia explícitas de ambos fixtures',()=>{const ids=pm.response.json().map(x=>x.id); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaId'))),'fixture Ana').to.eql(false); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaBrunoId'))),'fixture Bruno').to.eql(true); });"
                 ]
               }
             }
@@ -817,7 +1000,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"RN7: lista restringida al rol de carlos\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_carlos')))); });"
+                  "pm.test(\"RN7: lista restringida al rol de carlos\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_carlos')))); });",
+                  "pm.test('RN7: presencia y ausencia explícitas de ambos fixtures',()=>{const ids=pm.response.json().map(x=>x.id); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaId'))),'fixture Ana').to.eql(false); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaBrunoId'))),'fixture Bruno').to.eql(false); });"
                 ]
               }
             }
@@ -847,7 +1031,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"RN7: lista restringida al rol de diana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_diana')))); });"
+                  "pm.test(\"RN7: lista restringida al rol de diana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_diana')))); });",
+                  "pm.test('RN7: presencia y ausencia explícitas de ambos fixtures',()=>{const ids=pm.response.json().map(x=>x.id); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaId'))),'fixture Ana').to.eql(false); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaBrunoId'))),'fixture Bruno').to.eql(false); });"
                 ]
               }
             }
@@ -877,7 +1062,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"RN7: lista restringida al rol de elena\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); });"
+                  "pm.test(\"RN7: lista restringida al rol de elena\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); });",
+                  "pm.test('RN7: presencia y ausencia explícitas de ambos fixtures',()=>{const ids=pm.response.json().map(x=>x.id); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaId'))),'fixture Ana').to.eql(true); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaBrunoId'))),'fixture Bruno').to.eql(true); });"
                 ]
               }
             }
@@ -997,7 +1183,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RN7: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN7: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1027,7 +1213,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RN7: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN7: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1063,6 +1249,36 @@
                 "exec": [
                   "pm.test(\"RN3: HTTP 200\", () => pm.response.to.have.status(200));",
                   "pm.test(\"RN3: Carlos y Diana son técnicos y sus IDs coinciden con login\",()=>{ const b=pm.response.json(); pm.expect(b).to.be.an('array'); b.forEach(x=>pm.expect(x.rol).to.eql('TECNICO')); ['carlos','diana'].forEach(u=>{const t=b.find(x=>x.username===u); pm.expect(t,u+' presente').to.exist; pm.expect(t.id).to.eql(Number(pm.collectionVariables.get('id_'+u))); pm.collectionVariables.set('tecnico_'+u,t.id); }); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rechazar consulta de usuarios sin rol",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/usuarios",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('RNF5: HTTP 400 sin parámetro rol',()=>pm.response.to.have.status(400));",
+                  "pm.test(\"RN1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^400 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1106,7 +1322,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN3 / RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RN3 / RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN3 / RNF1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1150,7 +1366,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN3 / RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RN3 / RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN3 / RNF1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1194,7 +1410,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN3: HTTP 422\", () => pm.response.to.have.status(422));",
-                  "pm.test(\"RN3: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN3: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^422 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1238,7 +1454,53 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN3: HTTP 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"RN3: ASIGNADA al técnico descubierto\",()=>{const b=pm.response.json(); pm.expect(b.estado).to.eql('ASIGNADA'); pm.expect(b.tecnico.id).to.eql(Number(pm.collectionVariables.get('tecnico_carlos'))); });"
+                  "pm.test(\"RN3: ASIGNADA al técnico descubierto\",()=>{const b=pm.response.json(); pm.expect(b.estado).to.eql('ASIGNADA'); pm.expect(b.tecnico.id).to.eql(Number(pm.collectionVariables.get('tecnico_carlos'))); });",
+                  "pm.test('RN3: asignación conserva incidencia y reportante',()=>{const b=pm.response.json(); pm.expect(b.id).to.eql(Number(pm.collectionVariables.get('incidenciaId'))); pm.expect(b.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana'))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Elena asigna la incidencia de Bruno a Diana",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/incidencias/{{incidenciaBrunoId}}/asignacion",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"tecnicoId\": \"{{tecnico_diana}}\", \"comentario\": \"Asignación de prueba Postman\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN3: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN3: ASIGNADA al técnico descubierto\",()=>{const b=pm.response.json(); pm.expect(b.estado).to.eql('ASIGNADA'); pm.expect(b.tecnico.id).to.eql(Number(pm.collectionVariables.get('tecnico_diana'))); });",
+                  "pm.test('RN3: asignación conserva incidencia y reportante',()=>{const b=pm.response.json(); pm.expect(b.id).to.eql(Number(pm.collectionVariables.get('incidenciaBrunoId'))); pm.expect(b.reportante.id).to.eql(Number(pm.collectionVariables.get('id_bruno'))); });"
                 ]
               }
             }
@@ -1282,7 +1544,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN3: HTTP 409\", () => pm.response.to.have.status(409));",
-                  "pm.test(\"RN3: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN3: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^409 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1312,7 +1574,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"RN7: lista restringida al rol de carlos\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_carlos')))); b.forEach(x=>pm.expect(x.estado).to.eql('ASIGNADA')); });"
+                  "pm.test(\"RN7: lista restringida al rol de carlos\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_carlos')))); b.forEach(x=>pm.expect(x.estado).to.eql('ASIGNADA')); });",
+                  "pm.test('RN7: presencia y ausencia explícitas de ambos fixtures',()=>{const ids=pm.response.json().map(x=>x.id); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaId'))),'fixture Ana').to.eql(true); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaBrunoId'))),'fixture Bruno').to.eql(false); });"
                 ]
               }
             }
@@ -1342,7 +1605,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"RN7: lista restringida al rol de diana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_diana')))); });"
+                  "pm.test(\"RN7: lista restringida al rol de diana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.tecnico.id).to.eql(Number(pm.collectionVariables.get('id_diana')))); });",
+                  "pm.test('RN7: presencia y ausencia explícitas de ambos fixtures',()=>{const ids=pm.response.json().map(x=>x.id); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaId'))),'fixture Ana').to.eql(false); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaBrunoId'))),'fixture Bruno').to.eql(true); });"
                 ]
               }
             }
@@ -1372,7 +1636,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RN7: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN7: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1402,7 +1666,100 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN7: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RN7: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN7: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar ana después de asignar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_ana}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de ana\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); b.forEach(x=>pm.expect(x.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana')))); });",
+                  "pm.test('RN7: presencia y ausencia explícitas de ambos fixtures',()=>{const ids=pm.response.json().map(x=>x.id); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaId'))),'fixture Ana').to.eql(true); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaBrunoId'))),'fixture Bruno').to.eql(false); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar bruno después de asignar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_bruno}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de bruno\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(false); b.forEach(x=>pm.expect(x.reportante.id).to.eql(Number(pm.collectionVariables.get('id_bruno')))); });",
+                  "pm.test('RN7: presencia y ausencia explícitas de ambos fixtures',()=>{const ids=pm.response.json().map(x=>x.id); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaId'))),'fixture Ana').to.eql(false); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaBrunoId'))),'fixture Bruno').to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar elena después de asignar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/incidencias",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_elena}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"RN7: HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"RN7: lista restringida al rol de elena\", () => { const b=pm.response.json(); pm.expect(b).to.be.an('array'); pm.expect(b.some(x=>x.id===Number(pm.collectionVariables.get('incidenciaId')))).to.eql(true); });",
+                  "pm.test('RN7: presencia y ausencia explícitas de ambos fixtures',()=>{const ids=pm.response.json().map(x=>x.id); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaId'))),'fixture Ana').to.eql(true); pm.expect(ids.includes(Number(pm.collectionVariables.get('incidenciaBrunoId'))),'fixture Bruno').to.eql(true); });"
                 ]
               }
             }
@@ -1451,7 +1808,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RNF1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1495,7 +1852,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RNF1: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RNF1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1539,7 +1896,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN5: HTTP 403\", () => pm.response.to.have.status(403));",
-                  "pm.test(\"RN5: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN5: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^403 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1583,7 +1940,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN4: HTTP 409\", () => pm.response.to.have.status(409));",
-                  "pm.test(\"RN4: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN4: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^409 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1627,7 +1984,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN4: HTTP 409\", () => pm.response.to.have.status(409));",
-                  "pm.test(\"RN4: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN4: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^409 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1671,7 +2028,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN4 / RN5: HTTP 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"RN4: estado resultante EN_PROCESO\",()=>pm.expect(pm.response.json().estado).to.eql(\"EN_PROCESO\"));"
+                  "pm.test(\"RN4: estado resultante EN_PROCESO\",()=>pm.expect(pm.response.json().estado).to.eql(\"EN_PROCESO\"));",
+                  "pm.test('RN4 / RN5: transición conserva incidencia, reportante y técnico',()=>{const b=pm.response.json(); pm.expect(b.id).to.eql(Number(pm.collectionVariables.get('incidenciaId'))); pm.expect(b.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana'))); pm.expect(b.tecnico.id).to.eql(Number(pm.collectionVariables.get('tecnico_carlos'))); });"
                 ]
               }
             }
@@ -1715,7 +2073,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN4: HTTP 409\", () => pm.response.to.have.status(409));",
-                  "pm.test(\"RN4: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN4: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^409 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -1759,7 +2117,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN4 / RN5: HTTP 200\", () => pm.response.to.have.status(200));",
-                  "pm.test(\"RN4: estado resultante RESUELTA\",()=>pm.expect(pm.response.json().estado).to.eql(\"RESUELTA\"));"
+                  "pm.test(\"RN4: estado resultante RESUELTA\",()=>pm.expect(pm.response.json().estado).to.eql(\"RESUELTA\"));",
+                  "pm.test('RN4 / RN5: transición conserva incidencia, reportante y técnico',()=>{const b=pm.response.json(); pm.expect(b.id).to.eql(Number(pm.collectionVariables.get('incidenciaId'))); pm.expect(b.reportante.id).to.eql(Number(pm.collectionVariables.get('id_ana'))); pm.expect(b.tecnico.id).to.eql(Number(pm.collectionVariables.get('tecnico_carlos'))); });"
                 ]
               }
             }
@@ -1803,7 +2162,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RN4: HTTP 409\", () => pm.response.to.have.status(409));",
-                  "pm.test(\"RN4: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RN4: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^409 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -2052,7 +2411,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RNF1: HTTP 401\", () => pm.response.to.have.status(401));",
-                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RNF1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^401 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -2082,7 +2441,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RNF1: HTTP 401\", () => pm.response.to.have.status(401));",
-                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RNF1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^401 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
@@ -2119,7 +2478,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"RNF1: HTTP 401\", () => pm.response.to.have.status(401));",
-                  "pm.test(\"RNF1: error con message, httpStatus y timestamp\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\").and.not.empty; pm.expect(e).to.have.property(\"httpStatus\"); pm.expect(e.timestamp).to.be.a(\"number\"); });"
+                  "pm.test(\"RNF1: RNF5: error con mensaje no vacío y httpStatus coherente\", () => { const e=pm.response.json(); pm.expect(e.message).to.be.a(\"string\"); pm.expect(e.message.trim()).not.to.be.empty; pm.expect(e.httpStatus).to.be.a(\"string\").and.match(/^401 /); pm.expect(e.httpStatus).to.match(new RegExp(\"^\"+pm.response.code+\" \")); pm.expect(e.timestamp).to.be.a(\"number\"); });"
                 ]
               }
             }
