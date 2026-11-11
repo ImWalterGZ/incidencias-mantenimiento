@@ -1,0 +1,4 @@
+[INFO] Running com.incidencias.service.IncidenciaServiceTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.245 s -- in com.incidencias.service.IncidenciaServiceTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS

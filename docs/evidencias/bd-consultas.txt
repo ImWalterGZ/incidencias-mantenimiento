@@ -1,0 +1,54 @@
+-- Evidencia de datos. Consultas ejecutadas con psql dentro del contenedor después de sembrar-demo.py,
+-- de capturas.mjs y de dos corridas de newman:
+--   1) migraciones aplicadas por Flyway;  2) estructura y restricciones de la tabla incidencia;
+--   3) estado, técnico y filas de historial por incidencia;
+--   4) UPDATE manual que intenta poner ASIGNADA sin técnico: la base lo rechaza (ERROR esperado).
+
+ installed_rank | version |          description          | success 
+----------------+---------+-------------------------------+---------
+              1 | 1       | esquema inicial               | t
+              2 | 2       | catalogo y usuarios de prueba | t
+(2 rows)
+
+                                        Table "public.incidencia"
+    Column     |           Type           | Collation | Nullable |                Default                 
+---------------+--------------------------+-----------+----------+----------------------------------------
+ id            | bigint                   |           | not null | nextval('incidencia_id_seq'::regclass)
+ ubicacion_id  | bigint                   |           | not null | 
+ reportante_id | bigint                   |           | not null | 
+ tecnico_id    | bigint                   |           |          | 
+ categoria     | character varying(30)    |           | not null | 
+ descripcion   | character varying(1000)  |           | not null | 
+ prioridad     | character varying(10)    |           | not null | 
+ estado        | character varying(20)    |           | not null | 
+ fecha_reporte | timestamp with time zone |           | not null | now()
+Indexes:
+    "incidencia_pkey" PRIMARY KEY, btree (id)
+    "incidencia_estado_idx" btree (estado)
+    "incidencia_reportante_idx" btree (reportante_id)
+    "incidencia_tecnico_idx" btree (tecnico_id)
+Check constraints:
+    "incidencia_categoria_check" CHECK (categoria::text = ANY (ARRAY['ELECTRICA'::character varying, 'PLOMERIA'::character varying, 'MOBILIARIO'::character varying, 'EQUIPO_COMPUTO'::character varying, 'CLIMATIZACION'::character varying, 'OTRA'::character varying]::text[]))
+    "incidencia_estado_check" CHECK (estado::text = ANY (ARRAY['REPORTADA'::character varying, 'ASIGNADA'::character varying, 'EN_PROCESO'::character varying, 'RESUELTA'::character varying]::text[]))
+    "incidencia_prioridad_check" CHECK (prioridad::text = ANY (ARRAY['BAJA'::character varying, 'MEDIA'::character varying, 'ALTA'::character varying]::text[]))
+    "incidencia_tecnico_segun_estado" CHECK ((estado::text = 'REPORTADA'::text) = (tecnico_id IS NULL))
+Foreign-key constraints:
+    "incidencia_reportante_id_fkey" FOREIGN KEY (reportante_id) REFERENCES usuario(id)
+    "incidencia_tecnico_id_fkey" FOREIGN KEY (tecnico_id) REFERENCES usuario(id)
+    "incidencia_ubicacion_id_fkey" FOREIGN KEY (ubicacion_id) REFERENCES ubicacion(id)
+Referenced by:
+    TABLE "historial_estado_incidencia" CONSTRAINT "historial_estado_incidencia_incidencia_id_fkey" FOREIGN KEY (incidencia_id) REFERENCES incidencia(id)
+
+ id |   estado   | tecnico | filas_historial 
+----+------------+---------+-----------------
+  1 | RESUELTA   | diana   |               4
+  2 | EN_PROCESO | diana   |               3
+  3 | ASIGNADA   | carlos  |               2
+  4 | REPORTADA  |         |               1
+  5 | RESUELTA   | carlos  |               4
+  6 | RESUELTA   | carlos  |               4
+  7 | RESUELTA   | carlos  |               4
+(7 rows)
+
+ERROR:  new row for relation "incidencia" violates check constraint "incidencia_tecnico_segun_estado"
+DETAIL:  Failing row contains (4, 5, 2, null, ELECTRICA, El contacto doble junto a la ventanilla 2 echa chispa al conecta..., ALTA, ASIGNADA, 2026-11-12 02:41:10.18828+00).
