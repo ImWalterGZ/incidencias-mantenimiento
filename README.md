@@ -14,7 +14,7 @@ Cliente-servidor: una SPA en **Angular** consume una API REST de un monolito **S
 | `frontend/` | SPA Angular 22 (puerto 4200) |
 | `postman/` | Colección y entorno; se ejecuta con newman |
 | `docs/` | Análisis, matrices, cambios, diagramas (`docs/uml`, PlantUML + PNG) y evidencias |
-| `scripts/` | Datos de demostración y capturas automáticas |
+| `scripts/` | Datos de demostración, capturas automáticas y `evidencias.sh`, que regenera todas las evidencias |
 
 ## Documentos
 
@@ -45,7 +45,7 @@ Usuarios de prueba (contraseña `Incidencias2026`):
 ## Pruebas
 
 ```bash
-(cd backend && ./mvnw test)                                                   # 11 pruebas del servicio
-npx newman run postman/incidencias.postman_collection.json -e postman/local.postman_environment.json   # 56 requests, 125 assertions
+(cd backend && ./mvnw test)                                                   # 11 unitarias + 2 de integración (requiere la base)
+npx newman run postman/incidencias.postman_collection.json -e postman/local.postman_environment.json   # 65 requests, 162 assertions
 (cd frontend && npx ng test --watch=false)                                    # 5 pruebas del núcleo
 ```
