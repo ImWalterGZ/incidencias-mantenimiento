@@ -1,104 +1,83 @@
-import { DatePipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IncidenciaApiService } from '../../core/incidencia-api.service';
+import { Avatar, Cabecera, EstadoIcono, GrupoEstadoComponent, PrioridadIcono, Toast } from '../../shared/ui';
+import { agruparPorEstado, fechaCorta, fechaLarga, folio } from '../../shared/util';
 import {
   CATEGORIA_LABEL,
   ESTADOS,
   ESTADO_LABEL,
   Estado,
   Incidencia,
-  PRIORIDAD_LABEL,
   Usuario,
   leerError,
 } from '../../core/models';
 
 @Component({
   selector: 'app-bandeja-coordinador',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, Cabecera, GrupoEstadoComponent, EstadoIcono, PrioridadIcono, Avatar, Toast],
   template: `
-    <div class="encabezado">
-      <div>
-        <h1>Bandeja de coordinación</h1>
-        <p>Todas las incidencias. Asigna un técnico a las que están reportadas.</p>
+    <app-cabecera seccion="Coordinación" actual="Todas las incidencias">
+      <span class="cabecera__conteo">{{ incidencias().length }} incidencia(s)</span>
+      <label for="filtro" class="sr-only">Filtrar por estado</label>
+      <select id="filtro" class="select-chico" (change)="filtrar($any($event.target).value)">
+        <option value="">Todos los estados</option>
+        @for (e of estados; track e) {
+          <option [value]="e">{{ estadoLabel[e] }}</option>
+        }
+      </select>
+    </app-cabecera>
+
+    @if (error()) {
+      <div class="aviso aviso--error aviso--pagina" role="alert">{{ error() }}</div>
+    }
+
+    @if (cargando()) {
+      <p class="cargando">Cargando…</p>
+    } @else if (incidencias().length === 0) {
+      <div class="vacio">
+        <p class="vacio__titulo">No hay incidencias con este filtro</p>
+        <p>Prueba con otro estado o elige «Todos los estados».</p>
       </div>
-    </div>
-
-    <section class="tarjeta tarjeta--plana">
-      <div class="tarjeta__cabecera">
-        <div class="filtro">
-          <label for="filtro" class="etiqueta">Filtrar por estado</label>
-          <select id="filtro" (change)="filtrar($any($event.target).value)">
-            <option value="">Todos</option>
-            @for (e of estados; track e) {
-              <option [value]="e">{{ estadoLabel[e] }}</option>
-            }
-          </select>
-        </div>
-        <span class="secundario">{{ incidencias().length }} incidencia(s)</span>
-      </div>
-
-      @if (error()) {
-        <div class="aviso aviso--error" style="margin: 16px" role="alert">{{ error() }}</div>
-      }
-      @if (exito()) {
-        <div class="aviso aviso--ok" style="margin: 16px" role="status">{{ exito() }}</div>
-      }
-
-      @if (cargando()) {
-        <p class="cargando">Cargando…</p>
-      } @else if (incidencias().length === 0) {
-        <p class="vacio">No hay incidencias con este filtro.</p>
-      } @else {
-        <div class="tabla-scroll">
-          <table class="tabla">
-            <thead>
-              <tr>
-                <th>#</th><th>Incidencia</th><th>Ubicación</th><th>Reportó</th><th>Estado</th><th>Técnico / acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (i of incidencias(); track i.id) {
-                <tr>
-                  <td class="id" data-label="Folio">
-                    <a [routerLink]="['/incidencias', i.id]">#{{ i.id }}</a>
-                  </td>
-                  <td class="desc" data-label="Incidencia">
-                    <strong>{{ categoriaLabel[i.categoria] }}</strong>
-                    <span class="chip prio-{{ i.prioridad }}" style="margin-left: 6px">{{ prioridadLabel[i.prioridad] }}</span>
-                    <p>{{ i.descripcion }}</p>
-                    <span class="secundario">{{ i.fechaReporte | date: 'd MMM y, h:mm a' }}</span>
-                  </td>
-                  <td data-label="Ubicación">{{ i.ubicacion.edificio }}<br /><span class="secundario">{{ i.ubicacion.nombre }}</span></td>
-                  <td data-label="Reportó">{{ i.reportante.nombre }}</td>
-                  <td data-label="Estado"><span class="chip estado-{{ i.estado }}">{{ estadoLabel[i.estado] }}</span></td>
-                  <td data-label="Técnico">
-                    @if (i.estado === 'REPORTADA') {
-                      <div class="accion-fila">
-                        <select [attr.aria-label]="'Técnico para la incidencia ' + i.id" (change)="elegir(i.id, $any($event.target).value)">
-                          <option value="">Selecciona un técnico</option>
-                          @for (t of tecnicos(); track t.id) {
-                            <option [value]="t.id">{{ t.nombre }}</option>
-                          }
-                        </select>
-                        <div class="fila">
-                          <button type="button" class="btn btn--chico" [disabled]="!seleccion()[i.id] || asignando() === i.id" (click)="asignar(i)">
-                            {{ asignando() === i.id ? 'Asignando…' : 'Asignar' }}
-                          </button>
-                        </div>
-                        @if (errorFila()[i.id]; as e) { <span class="error-campo">{{ e }}</span> }
-                      </div>
-                    } @else {
-                      {{ i.tecnico?.nombre ?? '—' }}
+    } @else {
+      @for (g of grupos(); track g.estado) {
+        <app-grupo-estado [estado]="g.estado" [total]="g.items.length">
+          @for (i of g.items; track i.id) {
+            <article class="fila">
+              <app-prioridad-icono [prioridad]="i.prioridad" />
+              <span class="fila__id mono" aria-hidden="true">{{ folio(i.id) }}</span>
+              <app-estado-icono [estado]="i.estado" />
+              <a class="fila__titulo" [routerLink]="['/incidencias', i.id]">
+                <span class="sr-only">Ver seguimiento de la incidencia #{{ i.id }}. </span>{{ i.descripcion }}
+              </a>
+              <span class="fila__chips">
+                <span class="chip">{{ i.ubicacion.nombre }}</span>
+                <span class="chip">{{ categoriaLabel[i.categoria] }}</span>
+              </span>
+              @if (i.estado === 'REPORTADA') {
+                <span class="fila__asignar">
+                  <select class="select-chico" [attr.aria-label]="'Técnico para la incidencia ' + i.id" (change)="elegir(i.id, $any($event.target).value)">
+                    <option value="">Asignar a…</option>
+                    @for (t of tecnicos(); track t.id) {
+                      <option [value]="t.id">{{ t.nombre }}</option>
                     }
-                  </td>
-                </tr>
+                  </select>
+                  <button type="button" class="btn btn--chico" [disabled]="!seleccion()[i.id] || asignando() === i.id" (click)="asignar(i)">
+                    {{ asignando() === i.id ? 'Asignando…' : 'Asignar' }}
+                  </button>
+                </span>
+              } @else {
+                <app-avatar [nombre]="i.tecnico?.nombre" rotulo="Técnico" />
               }
-            </tbody>
-          </table>
-        </div>
+              <time class="fila__fecha" [attr.datetime]="i.fechaReporte" [attr.title]="fechaLarga(i.fechaReporte)">{{ fechaCorta(i.fechaReporte) }}</time>
+              @if (errorFila()[i.id]; as e) { <span class="fila__error error-campo" role="alert">{{ e }}</span> }
+            </article>
+          }
+        </app-grupo-estado>
       }
-    </section>
+    }
+
+    <app-toast [mensaje]="exito()" (cerrar)="exito.set(null)" />
   `,
 })
 export class BandejaCoordinadorComponent {
@@ -107,9 +86,12 @@ export class BandejaCoordinadorComponent {
   protected readonly estados = ESTADOS;
   protected readonly estadoLabel = ESTADO_LABEL;
   protected readonly categoriaLabel = CATEGORIA_LABEL;
-  protected readonly prioridadLabel = PRIORIDAD_LABEL;
+  protected readonly folio = folio;
+  protected readonly fechaCorta = fechaCorta;
+  protected readonly fechaLarga = fechaLarga;
 
   protected readonly incidencias = signal<Incidencia[]>([]);
+  protected readonly grupos = computed(() => agruparPorEstado(this.incidencias()));
   protected readonly tecnicos = signal<Usuario[]>([]);
   protected readonly seleccion = signal<Record<number, number>>({});
   protected readonly errorFila = signal<Record<number, string>>({});

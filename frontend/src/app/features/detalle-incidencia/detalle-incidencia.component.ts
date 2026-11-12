@@ -1,9 +1,10 @@
-import { DatePipe } from '@angular/common';
-import { Component, effect, inject, input, numberAttribute, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, numberAttribute, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
 import { IncidenciaApiService } from '../../core/incidencia-api.service';
+import { Avatar, Cabecera, EstadoIcono, PrioridadIcono } from '../../shared/ui';
+import { SECCION_ROL, fechaCorta, fechaLarga, folio } from '../../shared/util';
 import {
   CATEGORIA_LABEL,
   ESTADO_LABEL,
@@ -17,59 +18,86 @@ import {
 
 @Component({
   selector: 'app-detalle-incidencia',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, Cabecera, EstadoIcono, PrioridadIcono, Avatar],
   template: `
-    <div class="encabezado">
-      <div>
-        <h1>Seguimiento de la incidencia #{{ id() }}</h1>
-        <p>Datos completos y bitácora de cambios de estado.</p>
-      </div>
-      <a class="btn btn--secundario btn--chico" [routerLink]="auth.rutaInicio()" style="text-decoration: none">Volver</a>
-    </div>
+    <app-cabecera [seccion]="seccion()" [ruta]="auth.rutaInicio()" [actual]="folio(id())">
+      <a class="btn btn--secundario btn--chico" [routerLink]="auth.rutaInicio()">Volver</a>
+    </app-cabecera>
 
     @if (cargando()) {
       <p class="cargando">Cargando…</p>
     } @else if (error()) {
-      <div class="aviso aviso--error" role="alert">{{ error() }}</div>
+      <div class="aviso aviso--error aviso--pagina" role="alert">{{ error() }}</div>
     } @else if (incidencia(); as i) {
-      <div class="rejilla-2" style="grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr)">
-        <section class="tarjeta">
-          <h2>Datos de la incidencia</h2>
-          <dl class="datos">
-            <dt>Estado</dt><dd><span class="chip estado-{{ i.estado }}">{{ estadoLabel[i.estado] }}</span></dd>
-            <dt>Prioridad</dt><dd><span class="chip prio-{{ i.prioridad }}">{{ prioridadLabel[i.prioridad] }}</span></dd>
-            <dt>Categoría</dt><dd>{{ categoriaLabel[i.categoria] }}</dd>
-            <dt>Ubicación</dt><dd>{{ i.ubicacion.edificio }} · {{ i.ubicacion.nombre }} ({{ tipoLabel[i.ubicacion.tipo] }})</dd>
-            <dt>Descripción</dt><dd>{{ i.descripcion }}</dd>
-            <dt>Fecha de reporte</dt><dd>{{ i.fechaReporte | date: 'd MMM y, h:mm a' }}</dd>
-            <dt>Reportó</dt><dd>{{ i.reportante.nombre }}</dd>
-            <dt>Técnico asignado</dt><dd>{{ i.tecnico?.nombre ?? 'Sin asignar' }}</dd>
-          </dl>
-        </section>
+      <div class="detalle">
+        <div class="detalle__encabezado">
+          <p class="detalle__folio mono">{{ folio(i.id) }} <span class="sr-only">Incidencia #{{ i.id }}</span></p>
+          <h2 class="detalle__titulo">{{ i.descripcion }}</h2>
+        </div>
 
-        <section class="tarjeta">
-          <h2>Línea de tiempo</h2>
+        <aside class="propiedades" aria-labelledby="props-titulo">
+          <h2 id="props-titulo" class="propiedades__titulo">Propiedades</h2>
+          <dl class="propiedades__lista">
+            <dt>Estado</dt>
+            <dd class="estado-{{ i.estado }}">
+              <app-estado-icono [estado]="i.estado" [decorativo]="true" />
+              <span class="valor-estado">{{ estadoLabel[i.estado] }}</span>
+            </dd>
+            <dt>Prioridad</dt>
+            <dd>
+              <app-prioridad-icono [prioridad]="i.prioridad" />
+              {{ prioridadLabel[i.prioridad] }}
+            </dd>
+            <dt>Categoría</dt>
+            <dd>{{ categoriaLabel[i.categoria] }}</dd>
+            <dt>Ubicación</dt>
+            <dd class="dd-apilado">
+              {{ i.ubicacion.nombre }}
+              <span class="secundario">{{ i.ubicacion.edificio }} · {{ tipoLabel[i.ubicacion.tipo] }}</span>
+            </dd>
+            <dt>Reportó</dt>
+            <dd><app-avatar [nombre]="i.reportante.nombre" /> {{ i.reportante.nombre }}</dd>
+            <dt>Técnico</dt>
+            <dd>
+              <app-avatar [nombre]="i.tecnico?.nombre" rotulo="Técnico" />
+              @if (i.tecnico) { {{ i.tecnico.nombre }} } @else { <span class="secundario">Sin asignar</span> }
+            </dd>
+            <dt>Fecha</dt>
+            <dd>{{ fechaLarga(i.fechaReporte) }}</dd>
+          </dl>
+        </aside>
+
+        <section class="actividad" aria-labelledby="actividad-titulo">
+          <h3 id="actividad-titulo" class="actividad__titulo">Actividad</h3>
           @if (historial().length === 0) {
-            <p class="vacio">Sin movimientos registrados.</p>
+            <p class="secundario">Sin movimientos registrados.</p>
           } @else {
             <ol class="linea">
               @for (h of historial(); track h.id) {
                 <li>
-                  <div class="linea__estado">
-                    @if (h.estadoAnterior) {
-                      <span class="chip estado-{{ h.estadoAnterior }}">{{ estadoLabel[h.estadoAnterior] }}</span>
-                      <span class="linea__flecha" aria-label="a">→</span>
-                    } @else {
-                      <span class="secundario">Registro inicial:</span>
+                  <span class="linea__marca estado-{{ h.estadoNuevo }}">
+                    <app-estado-icono [estado]="h.estadoNuevo" [tamano]="18" [decorativo]="true" />
+                  </span>
+                  <div class="linea__contenido">
+                    <p class="linea__texto">
+                      <strong>{{ h.realizadoPor }}</strong>
+                      <span class="secundario linea__rol">({{ rolLabel[h.rolRealizadoPor] }})</span>
+                      @if (h.estadoAnterior) {
+                        cambió el estado de
+                        <span class="etiqueta-estado estado-{{ h.estadoAnterior }}">
+                          <app-estado-icono [estado]="h.estadoAnterior" [tamano]="14" [decorativo]="true" />{{ estadoLabel[h.estadoAnterior] }}</span>
+                        a
+                      } @else {
+                        reportó la incidencia como
+                      }
+                      <span class="etiqueta-estado estado-{{ h.estadoNuevo }}">
+                        <app-estado-icono [estado]="h.estadoNuevo" [tamano]="14" [decorativo]="true" />{{ estadoLabel[h.estadoNuevo] }}</span>
+                      <time class="linea__fecha" [attr.datetime]="h.fecha" [attr.title]="fechaLarga(h.fecha)">· {{ fechaCorta(h.fecha) }}</time>
+                    </p>
+                    @if (h.comentario) {
+                      <blockquote class="linea__comentario">{{ h.comentario }}</blockquote>
                     }
-                    <span class="chip estado-{{ h.estadoNuevo }}">{{ estadoLabel[h.estadoNuevo] }}</span>
                   </div>
-                  <div class="linea__meta">
-                    {{ h.realizadoPor }} ({{ rolLabel[h.rolRealizadoPor] }}) · {{ h.fecha | date: 'd MMM y, h:mm a' }}
-                  </div>
-                  @if (h.comentario) {
-                    <p class="linea__comentario">{{ h.comentario }}</p>
-                  }
                 </li>
               }
             </ol>
@@ -91,6 +119,13 @@ export class DetalleIncidenciaComponent {
   protected readonly prioridadLabel = PRIORIDAD_LABEL;
   protected readonly rolLabel = ROL_LABEL;
   protected readonly tipoLabel = TIPO_UBICACION_LABEL;
+  protected readonly folio = folio;
+  protected readonly fechaCorta = fechaCorta;
+  protected readonly fechaLarga = fechaLarga;
+  protected readonly seccion = computed(() => {
+    const u = this.auth.usuario();
+    return u ? SECCION_ROL[u.rol] : 'Incidencias';
+  });
 
   protected readonly incidencia = signal<Incidencia | null>(null);
   protected readonly historial = signal<HistorialEntrada[]>([]);

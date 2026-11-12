@@ -1,13 +1,13 @@
-import { DatePipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IncidenciaApiService } from '../../core/incidencia-api.service';
+import { Avatar, Cabecera, EstadoIcono, GrupoEstadoComponent, PrioridadIcono, Toast } from '../../shared/ui';
+import { agruparPorEstado, fechaCorta, fechaLarga, folio } from '../../shared/util';
 import {
   CATEGORIA_LABEL,
   ESTADO_LABEL,
   Estado,
   Incidencia,
-  PRIORIDAD_LABEL,
   leerError,
 } from '../../core/models';
 
@@ -18,74 +18,73 @@ const SIGUIENTE: Partial<Record<Estado, { estado: Estado; boton: string }>> = {
 
 @Component({
   selector: 'app-bandeja-tecnico',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, Cabecera, GrupoEstadoComponent, EstadoIcono, PrioridadIcono, Avatar, Toast],
   template: `
-    <div class="encabezado">
-      <div>
-        <h1>Mis asignaciones</h1>
-        <p>Incidencias que te asignó coordinación. Avanza su estado conforme las atiendes.</p>
-      </div>
-    </div>
+    <app-cabecera seccion="Mis asignaciones" actual="Asignadas a mí">
+      <span class="cabecera__conteo">{{ pendientes() }} pendiente(s) · {{ incidencias().length }} en total</span>
+    </app-cabecera>
 
-    @if (exito()) {
-      <div class="aviso aviso--ok" role="status">{{ exito() }}</div>
-    }
     @if (error()) {
-      <div class="aviso aviso--error" role="alert">{{ error() }}</div>
+      <div class="aviso aviso--error aviso--pagina" role="alert">{{ error() }}</div>
     }
 
     @if (cargando()) {
       <p class="cargando">Cargando…</p>
     } @else if (incidencias().length === 0) {
-      <p class="tarjeta vacio">No tienes incidencias asignadas.</p>
+      <div class="vacio">
+        <p class="vacio__titulo">No tienes incidencias asignadas</p>
+        <p>Cuando coordinación te asigne una, aparecerá aquí para que avances su estado.</p>
+      </div>
     } @else {
-      <div class="lista-tarjetas">
-        @for (i of incidencias(); track i.id) {
-          <article class="item">
-            <div class="item__cabecera">
-              <strong>#{{ i.id }} · {{ categoriaLabel[i.categoria] }}</strong>
-              <div class="item__chips">
-                <span class="chip prio-{{ i.prioridad }}">Prioridad {{ prioridadLabel[i.prioridad].toLowerCase() }}</span>
-                <span class="chip estado-{{ i.estado }}">{{ estadoLabel[i.estado] }}</span>
-              </div>
-            </div>
-            <p>{{ i.descripcion }}</p>
-            <span class="secundario">
-              {{ i.ubicacion.edificio }} · {{ i.ubicacion.nombre }} · Reportó {{ i.reportante.nombre }} · {{ i.fechaReporte | date: 'd MMM y, h:mm a' }}
-            </span>
-            <div class="item__pie">
+      @for (g of grupos(); track g.estado) {
+        <app-grupo-estado [estado]="g.estado" [total]="g.items.length">
+          @for (i of g.items; track i.id) {
+            <article class="fila fila--accion">
+              <app-prioridad-icono [prioridad]="i.prioridad" />
+              <span class="fila__id mono" aria-hidden="true">{{ folio(i.id) }}</span>
+              <app-estado-icono [estado]="i.estado" />
+              <a class="fila__titulo" [routerLink]="['/incidencias', i.id]">
+                <span class="sr-only">Ver seguimiento de la incidencia #{{ i.id }}. </span>{{ i.descripcion }}
+              </a>
+              <span class="fila__chips">
+                <span class="chip">{{ i.ubicacion.nombre }}</span>
+                <span class="chip">{{ categoriaLabel[i.categoria] }}</span>
+              </span>
+              <app-avatar [nombre]="i.reportante.nombre" rotulo="Reportó" />
+              <time class="fila__fecha" [attr.datetime]="i.fechaReporte" [attr.title]="fechaLarga(i.fechaReporte)">{{ fechaCorta(i.fechaReporte) }}</time>
               @if (siguiente[i.estado]; as sig) {
-                <div class="filtro" style="flex: 1; min-width: 260px">
+                <div class="fila__accion">
                   <input type="text" maxlength="500" placeholder="Comentario (opcional)"
                     [attr.aria-label]="'Comentario para la incidencia ' + i.id"
                     [value]="comentarios()[i.id] ?? ''"
                     (input)="comentar(i.id, $any($event.target).value)" />
-                  <button type="button" class="btn btn--chico" style="white-space: nowrap"
-                    [disabled]="avanzando() === i.id" (click)="avanzar(i, sig.estado)">
+                  <button type="button" class="btn btn--chico" [disabled]="avanzando() === i.id" (click)="avanzar(i, sig.estado)">
                     {{ avanzando() === i.id ? 'Guardando…' : sig.boton }}
                   </button>
                 </div>
-              } @else {
-                <span class="secundario">Incidencia resuelta, sin acciones pendientes.</span>
               }
-              <a class="btn btn--secundario btn--chico" [routerLink]="['/incidencias', i.id]" style="text-decoration: none">Ver seguimiento</a>
-            </div>
-            @if (errorFila()[i.id]; as e) { <span class="error-campo">{{ e }}</span> }
-          </article>
-        }
-      </div>
+              @if (errorFila()[i.id]; as e) { <span class="fila__error error-campo" role="alert">{{ e }}</span> }
+            </article>
+          }
+        </app-grupo-estado>
+      }
     }
+
+    <app-toast [mensaje]="exito()" (cerrar)="exito.set(null)" />
   `,
 })
 export class BandejaTecnicoComponent {
   private readonly api = inject(IncidenciaApiService);
 
-  protected readonly estadoLabel = ESTADO_LABEL;
   protected readonly categoriaLabel = CATEGORIA_LABEL;
-  protected readonly prioridadLabel = PRIORIDAD_LABEL;
+  protected readonly folio = folio;
+  protected readonly fechaCorta = fechaCorta;
+  protected readonly fechaLarga = fechaLarga;
   protected readonly siguiente = SIGUIENTE;
 
   protected readonly incidencias = signal<Incidencia[]>([]);
+  protected readonly grupos = computed(() => agruparPorEstado(this.incidencias()));
+  protected readonly pendientes = computed(() => this.incidencias().filter((i) => i.estado !== 'RESUELTA').length);
   protected readonly comentarios = signal<Record<number, string>>({});
   protected readonly errorFila = signal<Record<number, string>>({});
   protected readonly avanzando = signal<number | null>(null);
