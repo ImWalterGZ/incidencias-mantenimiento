@@ -18,6 +18,8 @@ const desc = 'El proyector del aula no enciende; el foco de encendido parpadea e
 // ana
 let p = await sesion('ana');
 await p.waitForURL('**/mis-incidencias');
+// El formulario vive en un panel lateral que abre el botón del encabezado.
+await p.getByRole('button', { name: 'Reportar incidencia' }).click();
 await p.selectOption('#ubicacion', { index: 1 });
 await p.selectOption('#categoria', { label: 'Equipo de cómputo' });
 await p.selectOption('#prioridad', { label: 'Alta' });
@@ -33,7 +35,7 @@ const anaCtx = p;
 // elena
 p = await sesion('elena');
 await p.waitForURL('**/coordinacion');
-const fila = p.locator('tr', { hasText: porId });
+const fila = p.locator('article', { hasText: porId });
 await fila.waitFor();
 await fila.locator('select').selectOption({ label: 'Carlos Méndez' });
 await p.screenshot({ path: OUT + '03-coordinador-asigna.png' });
