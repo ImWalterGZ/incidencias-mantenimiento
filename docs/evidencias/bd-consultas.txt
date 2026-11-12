@@ -1,7 +1,7 @@
--- Evidencia de datos. Consultas ejecutadas con psql dentro del contenedor después de sembrar-demo.py,
--- de capturas.mjs y de dos corridas de newman:
+-- Evidencia de datos. Consultas con psql dentro del contenedor después de sembrar-demo.py,
+-- capturas.mjs y dos corridas de newman:
 --   1) migraciones aplicadas por Flyway;  2) estructura y restricciones de la tabla incidencia;
---   3) estado, técnico y filas de historial por incidencia;
+--   3) estado, técnico y filas de historial de las incidencias de demostración y de la UI;
 --   4) UPDATE manual que intenta poner ASIGNADA sin técnico: la base lo rechaza (ERROR esperado).
 
  installed_rank | version |          description          | success 
@@ -46,9 +46,7 @@ Referenced by:
   3 | ASIGNADA   | carlos  |               2
   4 | REPORTADA  |         |               1
   5 | RESUELTA   | carlos  |               4
-  6 | RESUELTA   | carlos  |               4
-  7 | RESUELTA   | carlos  |               4
-(7 rows)
+(5 rows)
 
 ERROR:  new row for relation "incidencia" violates check constraint "incidencia_tecnico_segun_estado"
-DETAIL:  Failing row contains (4, 5, 2, null, ELECTRICA, El contacto doble junto a la ventanilla 2 echa chispa al conecta..., ALTA, ASIGNADA, 2026-11-12 02:41:10.18828+00).
+DETAIL:  Failing row contains (4, 5, 2, null, ELECTRICA, El contacto doble junto a la ventanilla 2 echa chispa al conecta..., ALTA, ASIGNADA, 2026-11-12 02:54:13.418282+00).
