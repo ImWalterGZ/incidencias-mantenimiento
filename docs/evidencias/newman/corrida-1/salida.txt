@@ -4,50 +4,50 @@ Incidencias: flujo y reglas de negocio
 
 ❏ 00 Login de los 5 usuarios
 ↳ Login ana
-  POST http://localhost:8081/api/v1/auth/login [200 OK, 753B, 107ms]
+  POST http://localhost:8081/api/v1/auth/login [200 OK, 753B, 91ms]
   ✓  RNF1: HTTP 200
   ✓  RNF1: token, vigencia e identidad de ana
 
 ↳ Login bruno
-  POST http://localhost:8081/api/v1/auth/login [200 OK, 762B, 84ms]
+  POST http://localhost:8081/api/v1/auth/login [200 OK, 762B, 78ms]
   ✓  RNF1: HTTP 200
   ✓  RNF1: token, vigencia e identidad de bruno
 
 ↳ Login carlos
-  POST http://localhost:8081/api/v1/auth/login [200 OK, 769B, 79ms]
+  POST http://localhost:8081/api/v1/auth/login [200 OK, 769B, 75ms]
   ✓  RNF1: HTTP 200
   ✓  RNF1: token, vigencia e identidad de carlos
 
 ↳ Login diana
-  POST http://localhost:8081/api/v1/auth/login [200 OK, 757B, 77ms]
+  POST http://localhost:8081/api/v1/auth/login [200 OK, 757B, 89ms]
   ✓  RNF1: HTTP 200
   ✓  RNF1: token, vigencia e identidad de diana
 
 ↳ Login elena
-  POST http://localhost:8081/api/v1/auth/login [200 OK, 774B, 77ms]
+  POST http://localhost:8081/api/v1/auth/login [200 OK, 774B, 104ms]
   ✓  RNF1: HTTP 200
   ✓  RNF1: token, vigencia e identidad de elena
 
 ❏ 01 Registrar y validación
 ↳ Consultar ubicaciones disponibles
-  GET http://localhost:8081/api/v1/ubicaciones [200 OK, 901B, 7ms]
+  GET http://localhost:8081/api/v1/ubicaciones [200 OK, 901B, 8ms]
   ✓  RN1: HTTP 200
   ✓  RN1: catálogo contiene ubicaciones 1 a 6
 
 ↳ Registrar incidencia propia de Ana
-  POST http://localhost:8081/api/v1/incidencias [201 Created, 833B, 12ms]
+  POST http://localhost:8081/api/v1/incidencias [201 Created, 833B, 13ms]
   ✓  RN2: HTTP 201
   ✓  RN2: nace REPORTADA sin técnico y pertenece a Ana
   ✓  RN1 / RN2: datos creados coinciden con la solicitud
 
 ↳ Registrar incidencia propia de Bruno
-  POST http://localhost:8081/api/v1/incidencias [201 Created, 837B, 13ms]
+  POST http://localhost:8081/api/v1/incidencias [201 Created, 837B, 14ms]
   ✓  RN2: HTTP 201
   ✓  RN2: nace REPORTADA sin técnico y pertenece a Bruno
   ✓  RN1 / RN2: datos creados coinciden con la solicitud
 
 ↳ Rechazar registro por carlos
-  POST http://localhost:8081/api/v1/incidencias [403 Forbidden, 544B, 5ms]
+  POST http://localhost:8081/api/v1/incidencias [403 Forbidden, 544B, 7ms]
   ✓  RNF1: HTTP 403
   ✓  RNF1: RNF5: error con mensaje no vacío y httpStatus coherente
 
@@ -69,37 +69,37 @@ Incidencias: flujo y reglas de negocio
   ✓  RN1: campos identifica categoria
 
 ↳ Rechazar campo obligatorio ausente: descripcion
-  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 548B, 8ms]
-  ✓  RN1: HTTP 400
-  ✓  RN1: RNF5: error con mensaje no vacío y httpStatus coherente
-  ✓  RN1: campos identifica descripcion
-
-↳ Rechazar campo obligatorio ausente: prioridad
-  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 543B, 8ms]
-  ✓  RN1: HTTP 400
-  ✓  RN1: RNF5: error con mensaje no vacío y httpStatus coherente
-  ✓  RN1: campos identifica prioridad
-
-↳ Rechazar descripción vacía
   POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 548B, 7ms]
   ✓  RN1: HTTP 400
   ✓  RN1: RNF5: error con mensaje no vacío y httpStatus coherente
   ✓  RN1: campos identifica descripcion
 
+↳ Rechazar campo obligatorio ausente: prioridad
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 543B, 6ms]
+  ✓  RN1: HTTP 400
+  ✓  RN1: RNF5: error con mensaje no vacío y httpStatus coherente
+  ✓  RN1: campos identifica prioridad
+
+↳ Rechazar descripción vacía
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 548B, 6ms]
+  ✓  RN1: HTTP 400
+  ✓  RN1: RNF5: error con mensaje no vacío y httpStatus coherente
+  ✓  RN1: campos identifica descripcion
+
 ↳ Rechazar descripción menor a 10
-  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 571B, 7ms]
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 571B, 6ms]
   ✓  RN1: HTTP 400
   ✓  RN1: RNF5: error con mensaje no vacío y httpStatus coherente
   ✓  RN1: campos identifica descripcion
 
 ↳ Rechazar descripción mayor a 1000
-  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 571B, 7ms]
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 571B, 6ms]
   ✓  RN1: HTTP 400
   ✓  RN1: RNF5: error con mensaje no vacío y httpStatus coherente
   ✓  RN1: campos identifica descripcion
 
 ↳ Rechazar ubicación inexistente
-  POST http://localhost:8081/api/v1/incidencias [422 Unprocessable Entity (WebDAV) (RFC 4918), 565B, 8ms]
+  POST http://localhost:8081/api/v1/incidencias [422 Unprocessable Entity (WebDAV) (RFC 4918), 565B, 10ms]
   ✓  RN1: HTTP 422
   ✓  RN1: RNF5: error con mensaje no vacío y httpStatus coherente
 
@@ -110,26 +110,26 @@ Incidencias: flujo y reglas de negocio
   ✓  RN1: campos identifica descripcion
 
 ↳ Rechazar descripción corta después de recortar
-  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 571B, 8ms]
+  POST http://localhost:8081/api/v1/incidencias [400 Bad Request, 571B, 7ms]
   ✓  RN1: HTTP 400
   ✓  RN1: RNF5: error con mensaje no vacío y httpStatus coherente
   ✓  RN1: campos identifica descripcion
 
 ↳ Registrar descripción válida con saltos de línea
-  POST http://localhost:8081/api/v1/incidencias [201 Created, 808B, 11ms]
+  POST http://localhost:8081/api/v1/incidencias [201 Created, 808B, 12ms]
   ✓  RN2: HTTP 201
   ✓  RN2: nace REPORTADA sin técnico y pertenece a Ana
   ✓  RN1 / RN2: datos creados coinciden con la solicitud
 
 ❏ 02 Consultar y visibilidad por rol
 ↳ Listar ana
-  GET http://localhost:8081/api/v1/incidencias [200 OK, 2.53kB, 12ms]
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 2.53kB, 9ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de ana
   ✓  RN7: presencia y ausencia explícitas de ambos fixtures
 
 ↳ Listar bruno
-  GET http://localhost:8081/api/v1/incidencias [200 OK, 1.66kB, 8ms]
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 1.66kB, 9ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de bruno
   ✓  RN7: presencia y ausencia explícitas de ambos fixtures
@@ -147,39 +147,39 @@ Incidencias: flujo y reglas de negocio
   ✓  RN7: presencia y ausencia explícitas de ambos fixtures
 
 ↳ Listar elena
-  GET http://localhost:8081/api/v1/incidencias [200 OK, 3.76kB, 12ms]
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 3.76kB, 13ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de elena
   ✓  RN7: presencia y ausencia explícitas de ambos fixtures
 
 ↳ Listar ana filtrando REPORTADA
-  GET http://localhost:8081/api/v1/incidencias?estado=REPORTADA [200 OK, 1.16kB, 11ms]
+  GET http://localhost:8081/api/v1/incidencias?estado=REPORTADA [200 OK, 1.16kB, 29ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de ana
 
 ↳ Listar elena filtrando RESUELTA
-  GET http://localhost:8081/api/v1/incidencias?estado=RESUELTA [200 OK, 1.33kB, 11ms]
+  GET http://localhost:8081/api/v1/incidencias?estado=RESUELTA [200 OK, 1.33kB, 35ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de elena
 
 ↳ Ana consulta su detalle
-  GET http://localhost:8081/api/v1/incidencias/6 [200 OK, 803B, 9ms]
+  GET http://localhost:8081/api/v1/incidencias/6 [200 OK, 803B, 21ms]
   ✓  RN7: HTTP 200
   ✓  RN7: detalle corresponde a la incidencia creada
 
 ↳ Bruno no accede a detalle de Ana
-  GET http://localhost:8081/api/v1/incidencias/6 [403 Forbidden, 530B, 7ms]
+  GET http://localhost:8081/api/v1/incidencias/6 [403 Forbidden, 530B, 8ms]
   ✓  RN7: HTTP 403
   ✓  RN7: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Bruno no accede a historial de Ana
-  GET http://localhost:8081/api/v1/incidencias/6/historial [403 Forbidden, 530B, 6ms]
+  GET http://localhost:8081/api/v1/incidencias/6/historial [403 Forbidden, 530B, 7ms]
   ✓  RN7: HTTP 403
   ✓  RN7: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ❏ 03 Asignar técnico y negativos
 ↳ Descubrir técnicos y contrastar identidades
-  GET http://localhost:8081/api/v1/usuarios?rol=TECNICO [200 OK, 561B, 8ms]
+  GET http://localhost:8081/api/v1/usuarios?rol=TECNICO [200 OK, 561B, 6ms]
   ✓  RN3: HTTP 200
   ✓  RN3: Carlos y Diana son técnicos y sus IDs coinciden con login
 
@@ -194,62 +194,62 @@ Incidencias: flujo y reglas de negocio
   ✓  RN3 / RNF1: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Rechazar asignación por carlos
-  PATCH http://localhost:8081/api/v1/incidencias/6/asignacion [403 Forbidden, 544B, 5ms]
+  PATCH http://localhost:8081/api/v1/incidencias/6/asignacion [403 Forbidden, 544B, 4ms]
   ✓  RN3 / RNF1: HTTP 403
   ✓  RN3 / RNF1: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Rechazar destino no técnico
-  PATCH http://localhost:8081/api/v1/incidencias/6/asignacion [422 Unprocessable Entity (WebDAV) (RFC 4918), 588B, 9ms]
+  PATCH http://localhost:8081/api/v1/incidencias/6/asignacion [422 Unprocessable Entity (WebDAV) (RFC 4918), 588B, 7ms]
   ✓  RN3: HTTP 422
   ✓  RN3: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Elena asigna a Carlos
-  PATCH http://localhost:8081/api/v1/incidencias/6/asignacion [200 OK, 868B, 9ms]
+  PATCH http://localhost:8081/api/v1/incidencias/6/asignacion [200 OK, 868B, 10ms]
   ✓  RN3: HTTP 200
   ✓  RN3: ASIGNADA al técnico descubierto
   ✓  RN3: asignación conserva incidencia y reportante
 
 ↳ Elena asigna la incidencia de Bruno a Diana
-  PATCH http://localhost:8081/api/v1/incidencias/7/asignacion [200 OK, 867B, 11ms]
+  PATCH http://localhost:8081/api/v1/incidencias/7/asignacion [200 OK, 867B, 12ms]
   ✓  RN3: HTTP 200
   ✓  RN3: ASIGNADA al técnico descubierto
   ✓  RN3: asignación conserva incidencia y reportante
 
 ↳ Rechazar reasignación a Diana
-  PATCH http://localhost:8081/api/v1/incidencias/6/asignacion [409 Conflict, 552B, 9ms]
+  PATCH http://localhost:8081/api/v1/incidencias/6/asignacion [409 Conflict, 552B, 7ms]
   ✓  RN3: HTTP 409
   ✓  RN3: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Listar carlos filtrando ASIGNADA
-  GET http://localhost:8081/api/v1/incidencias?estado=ASIGNADA [200 OK, 1.33kB, 9ms]
+  GET http://localhost:8081/api/v1/incidencias?estado=ASIGNADA [200 OK, 1.33kB, 7ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de carlos
   ✓  RN7: presencia y ausencia explícitas de ambos fixtures
 
 ↳ Listar diana
-  GET http://localhost:8081/api/v1/incidencias [200 OK, 1.77kB, 9ms]
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 1.77kB, 10ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de diana
   ✓  RN7: presencia y ausencia explícitas de ambos fixtures
 
 ↳ Diana no accede a detalle asignado a Carlos
-  GET http://localhost:8081/api/v1/incidencias/6 [403 Forbidden, 530B, 6ms]
+  GET http://localhost:8081/api/v1/incidencias/6 [403 Forbidden, 530B, 7ms]
   ✓  RN7: HTTP 403
   ✓  RN7: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Diana no accede a historial asignado a Carlos
-  GET http://localhost:8081/api/v1/incidencias/6/historial [403 Forbidden, 530B, 8ms]
+  GET http://localhost:8081/api/v1/incidencias/6/historial [403 Forbidden, 530B, 7ms]
   ✓  RN7: HTTP 403
   ✓  RN7: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Listar ana después de asignar
-  GET http://localhost:8081/api/v1/incidencias [200 OK, 2.59kB, 7ms]
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 2.59kB, 9ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de ana
   ✓  RN7: presencia y ausencia explícitas de ambos fixtures
 
 ↳ Listar bruno después de asignar
-  GET http://localhost:8081/api/v1/incidencias [200 OK, 1.72kB, 7ms]
+  GET http://localhost:8081/api/v1/incidencias [200 OK, 1.72kB, 9ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de bruno
   ✓  RN7: presencia y ausencia explícitas de ambos fixtures
@@ -262,12 +262,12 @@ Incidencias: flujo y reglas de negocio
 
 ❏ 04 Actualizar estado y negativos
 ↳ Rechazar cambio por ana
-  PATCH http://localhost:8081/api/v1/incidencias/6/estado [403 Forbidden, 544B, 4ms]
+  PATCH http://localhost:8081/api/v1/incidencias/6/estado [403 Forbidden, 544B, 5ms]
   ✓  RNF1: HTTP 403
   ✓  RNF1: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Rechazar cambio por elena
-  PATCH http://localhost:8081/api/v1/incidencias/6/estado [403 Forbidden, 544B, 5ms]
+  PATCH http://localhost:8081/api/v1/incidencias/6/estado [403 Forbidden, 544B, 4ms]
   ✓  RNF1: HTTP 403
   ✓  RNF1: RNF5: error con mensaje no vacío y httpStatus coherente
 
@@ -282,23 +282,23 @@ Incidencias: flujo y reglas de negocio
   ✓  RN4: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Rechazar ASIGNADA por endpoint de estado
-  PATCH http://localhost:8081/api/v1/incidencias/6/estado [409 Conflict, 554B, 6ms]
+  PATCH http://localhost:8081/api/v1/incidencias/6/estado [409 Conflict, 554B, 9ms]
   ✓  RN4: HTTP 409
   ✓  RN4: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Carlos avanza a EN_PROCESO
-  PATCH http://localhost:8081/api/v1/incidencias/6/estado [200 OK, 870B, 9ms]
+  PATCH http://localhost:8081/api/v1/incidencias/6/estado [200 OK, 870B, 13ms]
   ✓  RN4 / RN5: HTTP 200
   ✓  RN4: estado resultante EN_PROCESO
   ✓  RN4 / RN5: transición conserva incidencia, reportante y técnico
 
 ↳ Rechazar retroceso a REPORTADA
-  PATCH http://localhost:8081/api/v1/incidencias/6/estado [409 Conflict, 564B, 5ms]
+  PATCH http://localhost:8081/api/v1/incidencias/6/estado [409 Conflict, 564B, 9ms]
   ✓  RN4: HTTP 409
   ✓  RN4: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Carlos resuelve
-  PATCH http://localhost:8081/api/v1/incidencias/6/estado [200 OK, 868B, 9ms]
+  PATCH http://localhost:8081/api/v1/incidencias/6/estado [200 OK, 868B, 12ms]
   ✓  RN4 / RN5: HTTP 200
   ✓  RN4: estado resultante RESUELTA
   ✓  RN4 / RN5: transición conserva incidencia, reportante y técnico
@@ -310,7 +310,7 @@ Incidencias: flujo y reglas de negocio
 
 ❏ 05 Consultar seguimiento
 ↳ Historial completo visible para ana
-  GET http://localhost:8081/api/v1/incidencias/6/historial [200 OK, 1.22kB, 8ms]
+  GET http://localhost:8081/api/v1/incidencias/6/historial [200 OK, 1.22kB, 10ms]
   ✓  RN6 / RN7: HTTP 200
   ✓  RN6: exactamente cuatro filas en orden y encadenadas
   ✓  RN6: realizadoPor es Ana, Elena, Carlos y Carlos
@@ -324,7 +324,7 @@ Incidencias: flujo y reglas de negocio
   ✓  RN6: fechas válidas y cronológicas
 
 ↳ Historial completo visible para carlos
-  GET http://localhost:8081/api/v1/incidencias/6/historial [200 OK, 1.22kB, 9ms]
+  GET http://localhost:8081/api/v1/incidencias/6/historial [200 OK, 1.22kB, 7ms]
   ✓  RN6 / RN7: HTTP 200
   ✓  RN6: exactamente cuatro filas en orden y encadenadas
   ✓  RN6: realizadoPor es Ana, Elena, Carlos y Carlos
@@ -336,17 +336,17 @@ Incidencias: flujo y reglas de negocio
   ✓  RN7: lista restringida al rol de ana
 
 ↳ Listar carlos filtrando RESUELTA
-  GET http://localhost:8081/api/v1/incidencias?estado=RESUELTA [200 OK, 1.32kB, 10ms]
+  GET http://localhost:8081/api/v1/incidencias?estado=RESUELTA [200 OK, 1.32kB, 8ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de carlos
 
 ↳ Listar elena filtrando RESUELTA
-  GET http://localhost:8081/api/v1/incidencias?estado=RESUELTA [200 OK, 1.78kB, 7ms]
+  GET http://localhost:8081/api/v1/incidencias?estado=RESUELTA [200 OK, 1.78kB, 8ms]
   ✓  RN7: HTTP 200
   ✓  RN7: lista restringida al rol de elena
 
 ↳ Consultar detalle final
-  GET http://localhost:8081/api/v1/incidencias/6 [200 OK, 868B, 6ms]
+  GET http://localhost:8081/api/v1/incidencias/6 [200 OK, 868B, 8ms]
   ✓  RN4 / RN7: HTTP 200
   ✓  RN4: detalle final RESUELTA conserva reportante y técnico
 
@@ -362,7 +362,7 @@ Incidencias: flujo y reglas de negocio
   ✓  RNF1: RNF5: error con mensaje no vacío y httpStatus coherente
 
 ↳ Credenciales malas
-  POST http://localhost:8081/api/v1/auth/login [401 Unauthorized, 538B, 120ms]
+  POST http://localhost:8081/api/v1/auth/login [401 Unauthorized, 538B, 76ms]
   ✓  RNF1: HTTP 401
   ✓  RNF1: RNF5: error con mensaje no vacío y httpStatus coherente
 
@@ -379,9 +379,9 @@ Incidencias: flujo y reglas de negocio
 ├─────────────────────────┼───────────────────┼──────────────────┤
 │              assertions │               162 │                0 │
 ├─────────────────────────┴───────────────────┴──────────────────┤
-│ total run duration: 1923ms                                     │
+│ total run duration: 2s                                         │
 ├────────────────────────────────────────────────────────────────┤
-│ total data received: 35.18kB (approx)                          │
+│ total data received: 35.17kB (approx)                          │
 ├────────────────────────────────────────────────────────────────┤
-│ average response time: 15ms [min: 2ms, max: 120ms, s.d.: 24ms] │
+│ average response time: 16ms [min: 2ms, max: 104ms, s.d.: 22ms] │
 └────────────────────────────────────────────────────────────────┘

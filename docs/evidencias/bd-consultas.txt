@@ -49,4 +49,4 @@ Referenced by:
 (5 rows)
 
 ERROR:  new row for relation "incidencia" violates check constraint "incidencia_tecnico_segun_estado"
-DETAIL:  Failing row contains (4, 5, 2, null, ELECTRICA, El contacto doble junto a la ventanilla 2 echa chispa al conecta..., ALTA, ASIGNADA, 2026-11-12 02:54:13.418282+00).
+DETAIL:  Failing row contains (4, 5, 2, null, ELECTRICA, El contacto doble junto a la ventanilla 2 echa chispa al conecta..., ALTA, ASIGNADA, 2026-11-12 03:20:17.73922+00).
